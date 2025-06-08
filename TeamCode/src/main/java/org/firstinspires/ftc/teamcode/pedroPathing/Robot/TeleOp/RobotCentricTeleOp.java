@@ -5,6 +5,7 @@ import com.pedropathing.localization.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Robot.Structure.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
@@ -18,7 +19,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 @TeleOp(name = "Example Robot-Centric Teleop", group = "Examples")
 public class RobotCentricTeleOp extends OpMode {
     private Follower follower;
-    private final Pose startPose = new Pose(0,0,0);
+    private final Pose startPose = PoseStorage.CurrentPose;
 
     /** This method is call once when init is played, it initializes the follower **/
     @Override
@@ -49,11 +50,16 @@ public class RobotCentricTeleOp extends OpMode {
         - Robot-Centric Mode: true
         */
 
-        follower.setTeleOpMovementVectors(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
-                true);
+        if(Math.abs(gamepad1.left_stick_y) < 0.05 && Math.abs(gamepad1.left_stick_x) < 0.05 && Math.abs(gamepad1.right_stick_x) < 0.05) {
+            follower.setTeleOpMovementVectors(0,0,0,true);
+        } else {
+            follower.setTeleOpMovementVectors(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
+                    true);
+            follower.update();
+        }
         follower.update();
 
         /* Telemetry Outputs of our Follower */
