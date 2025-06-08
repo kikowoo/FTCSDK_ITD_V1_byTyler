@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.examples;
+package org.firstinspires.ftc.teamcode.pedroPathing.Robot.Auto;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
@@ -7,12 +7,12 @@ import com.pedropathing.pathgen.BezierLine;
 import com.pedropathing.pathgen.Path;
 import com.pedropathing.pathgen.PathChain;
 import com.pedropathing.pathgen.Point;
-import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import java.lang.Math;
 
+import org.firstinspires.ftc.teamcode.pedroPathing.Robot.Structure.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
@@ -328,6 +328,7 @@ public class Specimens extends OpMode {
             case 15:
                 if(!follower.isBusy()) {
                     setPathState(-1);
+                    PoseStorage.CurrentPose = follower.getPose();
                 }
                 break;
         }
@@ -383,5 +384,6 @@ public class Specimens extends OpMode {
     /** We do not use this because everything should automatically disable **/
     @Override
     public void stop() {
+        PoseStorage.CurrentPose = follower.getPose();
     }
 }
