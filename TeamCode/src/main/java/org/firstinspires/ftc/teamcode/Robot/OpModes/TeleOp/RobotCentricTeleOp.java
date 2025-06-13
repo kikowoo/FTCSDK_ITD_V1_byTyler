@@ -1,24 +1,23 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.Robot.TeleOp;
+package org.firstinspires.ftc.teamcode.Robot.OpModes.TeleOp;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 
-import org.firstinspires.ftc.teamcode.pedroPathing.Robot.Structure.PoseStorage;
+import org.firstinspires.ftc.teamcode.Robot.Structure.Library.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 /**
- * This is an example teleop that showcases movement and field-centric driving.
+ * This is an example teleop that showcases movement and robot-centric driving.
  *
  * @author Baron Henderson - 20077 The Indubitables
  * @version 2.0, 12/30/2024
  */
 
-@TeleOp(name = "Example Field-Centric Teleop", group = "Examples")
-public class FieldCentricTeleOp extends OpMode {
+@TeleOp(name = "Example Robot-Centric Teleop", group = "Examples")
+public class RobotCentricTeleOp extends OpMode {
     private Follower follower;
     private final Pose startPose = PoseStorage.CurrentPose;
 
@@ -48,8 +47,9 @@ public class FieldCentricTeleOp extends OpMode {
         - Forward/Backward Movement: -gamepad1.left_stick_y
         - Left/Right Movement: -gamepad1.left_stick_x
         - Turn Left/Right Movement: -gamepad1.right_stick_x
-        - Robot-Centric Mode: false
+        - Robot-Centric Mode: true
         */
+
         if(Math.abs(gamepad1.left_stick_y) < 0.05 && Math.abs(gamepad1.left_stick_x) < 0.05 && Math.abs(gamepad1.right_stick_x) < 0.05) {
             follower.setTeleOpMovementVectors(0,0,0,true);
         } else {
@@ -57,9 +57,10 @@ public class FieldCentricTeleOp extends OpMode {
                     -gamepad1.left_stick_y,
                     -gamepad1.left_stick_x,
                     -gamepad1.right_stick_x,
-                    false);
+                    true);
             follower.update();
         }
+        follower.update();
 
         /* Telemetry Outputs of our Follower */
         telemetry.addData("X", follower.getPose().getX());
@@ -68,6 +69,7 @@ public class FieldCentricTeleOp extends OpMode {
 
         /* Update Telemetry to the Driver Hub */
         telemetry.update();
+
     }
 
     /** We do not use this because everything automatically should disable **/

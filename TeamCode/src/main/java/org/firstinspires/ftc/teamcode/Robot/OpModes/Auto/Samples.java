@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.pedroPathing.Robot.Auto;
+package org.firstinspires.ftc.teamcode.Robot.OpModes.Auto;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
