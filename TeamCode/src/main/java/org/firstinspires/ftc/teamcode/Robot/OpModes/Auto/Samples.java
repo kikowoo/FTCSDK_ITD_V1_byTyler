@@ -12,6 +12,7 @@ import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Robot.Structure.Library.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
@@ -319,5 +320,6 @@ public class Samples extends OpMode {
     /** We do not use this because everything should automatically disable **/
     @Override
     public void stop() {
+        PoseStorage.CurrentPose = follower.getPose();
     }
 }

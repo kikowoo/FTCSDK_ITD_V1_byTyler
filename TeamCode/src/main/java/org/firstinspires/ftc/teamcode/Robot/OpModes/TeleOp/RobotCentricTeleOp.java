@@ -2,6 +2,10 @@ package org.firstinspires.ftc.teamcode.Robot.OpModes.TeleOp;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
+import com.pedropathing.pathgen.BezierLine;
+import com.pedropathing.pathgen.Path;
+import com.pedropathing.pathgen.Point;
+import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -19,13 +23,20 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 @TeleOp(name = "Example Robot-Centric Teleop", group = "Examples")
 public class RobotCentricTeleOp extends OpMode {
     private Follower follower;
+    private Timer pathTimer, actionTimer, opmodeTimer;
+    private int pathState;
     private final Pose startPose = PoseStorage.CurrentPose;
+    private final Pose scorePose = new Pose(18, 130, Math.toRadians(315));
 
     /** This method is call once when init is played, it initializes the follower **/
     @Override
     public void init() {
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(startPose);
+
+        pathTimer = new Timer();
+        opmodeTimer = new Timer();
+        opmodeTimer.resetTimer();
     }
 
     /** This method is called continuously after Init while waiting to be started. **/
@@ -50,18 +61,31 @@ public class RobotCentricTeleOp extends OpMode {
         - Robot-Centric Mode: true
         */
 
-        if(Math.abs(gamepad1.left_stick_y) < 0.05 && Math.abs(gamepad1.left_stick_x) < 0.05 && Math.abs(gamepad1.right_stick_x) < 0.05) {
-            follower.setTeleOpMovementVectors(0,0,0,true);
-        } else {
-            follower.setTeleOpMovementVectors(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x,
-                    -gamepad1.right_stick_x,
-                    true);
-            follower.update();
-        }
+        follower.setTeleOpMovementVectors(
+                -gamepad1.left_stick_y,
+                -gamepad1.left_stick_x,
+                -gamepad1.right_stick_x,
+                true);
         follower.update();
 
+        if(gamepad1.a) {
+            Path scoreBasket;
+            scoreBasket = new Path(new BezierLine(new Point(follower.getPose()), new Point(scorePose)));
+            scoreBasket.setLinearHeadingInterpolation(follower.getPose().getHeading(), scorePose.getHeading());
+            setPathState(0);
+            switch (pathState) {
+                case 0:
+                    follower.followPath(scoreBasket);
+                    setPathState(1);
+                    break;
+                case 1:
+                    if (!follower.isBusy()) {
+                        setPathState(-1);
+                        PoseStorage.CurrentPose = follower.getPose();
+                    }
+                    break;
+            }
+        }
         /* Telemetry Outputs of our Follower */
         telemetry.addData("X", follower.getPose().getX());
         telemetry.addData("Y", follower.getPose().getY());
@@ -69,7 +93,10 @@ public class RobotCentricTeleOp extends OpMode {
 
         /* Update Telemetry to the Driver Hub */
         telemetry.update();
-
+    }
+    public void setPathState(int pState) {
+        pathState = pState;
+        pathTimer.resetTimer();
     }
 
     /** We do not use this because everything automatically should disable **/
