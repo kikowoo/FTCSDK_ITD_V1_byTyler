@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot.OpModes.Auto;
+package org.firstinspires.ftc.teamcode.pedroPathing.Robot.Auto;
 
 import com.pedropathing.follower.Follower;
 import com.pedropathing.localization.Pose;
@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import java.lang.Math;
 
-import org.firstinspires.ftc.teamcode.Robot.Structure.Library.PoseStorage;
+import org.firstinspires.ftc.teamcode.pedroPathing.Robot.Structure.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 

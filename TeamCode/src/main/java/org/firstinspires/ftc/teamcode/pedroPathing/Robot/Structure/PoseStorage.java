@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Robot.Structure.Library;
+package org.firstinspires.ftc.teamcode.pedroPathing.Robot.Structure;
 
 import com.pedropathing.localization.Pose;
 public class PoseStorage {
