@@ -21,7 +21,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
  * @version 2.0, 12/30/2024
  */
 
-@TeleOp(name = "Robot-Centric Teleop", group = "Examples")
+@TeleOp(name = "Robot-Centric Teleop", group = "TeleOp")
 public class RobotCentricTeleOp extends OpMode {
     private Follower follower;
     private Path scoreBasket;
@@ -41,8 +41,8 @@ public class RobotCentricTeleOp extends OpMode {
         opmodeTimer = new Timer();
         opmodeTimer.resetTimer();
 
-        Gamepad currentGamepad1 = new Gamepad();
-        Gamepad previousGamepad1 = new Gamepad();
+        currentGamepad1 = new Gamepad();
+        previousGamepad1 = new Gamepad();
     }
 
     /** This method is called continuously after Init while waiting to be started. **/
@@ -54,13 +54,14 @@ public class RobotCentricTeleOp extends OpMode {
     @Override
     public void start() {
         follower.startTeleopDrive();
+        setPathState(0);
     }
 
     /** This is the main loop of the opmode and runs continuously after play **/
     @Override
     public void loop() {
-        previousGamepad1.copy(currentGamepad1);
         currentGamepad1.copy(gamepad1);
+        previousGamepad1.copy(currentGamepad1);
 
         follower.setTeleOpMovementVectors(
                 -gamepad1.left_stick_y,
@@ -72,20 +73,7 @@ public class RobotCentricTeleOp extends OpMode {
         if(currentGamepad1.a && !previousGamepad1.a) {
             scoreBasket = new Path(new BezierLine(new Point(follower.getPose()), new Point(scorePose)));
             scoreBasket.setLinearHeadingInterpolation(follower.getPose().getHeading(), scorePose.getHeading());
-            setPathState(0);
-        }
-
-        switch (pathState) {
-            case 0:
-                follower.followPath(scoreBasket);
-                setPathState(1);
-                break;
-            case 1:
-                if (!follower.isBusy()) {
-                    setPathState(-1);
-                    PoseStorage.CurrentPose = follower.getPose();
-                }
-                break;
+            paths();
         }
 
         /* Telemetry Outputs of our Follower */
@@ -99,6 +87,21 @@ public class RobotCentricTeleOp extends OpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
+    }
+
+    public void paths() {
+        switch (pathState) {
+            case 0:
+                follower.followPath(scoreBasket);
+                setPathState(1);
+                break;
+            case 1:
+                if (!follower.isBusy()) {
+                    setPathState(-1);
+                    PoseStorage.CurrentPose = follower.getPose();
+                }
+                break;
+        }
     }
 
     /** We do not use this because everything automatically should disable **/
