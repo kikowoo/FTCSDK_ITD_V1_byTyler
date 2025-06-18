@@ -45,6 +45,8 @@ public class RobotCentricTeleOp extends OpMode {
 
         currentGamepad1 = new Gamepad();
         previousGamepad1 = new Gamepad();
+
+        follower.startTeleopDrive();
     }
 
     /** This method is called continuously after Init while waiting to be started. **/
@@ -55,8 +57,7 @@ public class RobotCentricTeleOp extends OpMode {
     /** This method is called once at the start of the OpMode. **/
     @Override
     public void start() {
-        follower.startTeleopDrive();
-        setPathState(0);
+
     }
 
     /** This is the main loop of the opmode and runs continuously after play **/
@@ -65,7 +66,6 @@ public class RobotCentricTeleOp extends OpMode {
         currentGamepad1.copy(gamepad1);
         previousGamepad1.copy(currentGamepad1);
         if(!isAutoDriving) {
-            follower.startTeleopDrive();
             follower.setTeleOpMovementVectors(
                     -gamepad1.left_stick_y,
                     -gamepad1.left_stick_x,
@@ -76,18 +76,26 @@ public class RobotCentricTeleOp extends OpMode {
 
         if(currentGamepad1.a && !previousGamepad1.a) {
             isAutoDriving = true;
+            follower.breakFollowing();
             scoreBasket = new Path(new BezierLine(new Point(follower.getPose()), new Point(scorePose)));
-            scoreBasket.setLinearHeadingInterpolation(follower.getPose().getHeading(), scorePose.getHeading());
+            scoreBasket.setConstantHeadingInterpolation(315);
             follower.followPath(scoreBasket);
-            if (!follower.isBusy()) {
-                isAutoDriving = false;
-            }
+        }
+
+        if(currentGamepad1.start && !previousGamepad1.start){
+            isAutoDriving = false;
+            follower.startTeleopDrive();
+        }
+
+        if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
+            follower.setPose(new Pose(20, 20, 0));
         }
 
         /* Telemetry Outputs of our Follower */
         telemetry.addData("X", follower.getPose().getX());
         telemetry.addData("Y", follower.getPose().getY());
         telemetry.addData("Heading in Degrees", Math.toDegrees(follower.getPose().getHeading()));
+        telemetry.addData("folower", follower.isBusy());
 
         /* Update Telemetry to the Driver Hub */
         telemetry.update();
