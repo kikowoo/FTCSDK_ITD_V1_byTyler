@@ -65,6 +65,7 @@ public class RobotCentricTeleOp extends OpMode {
         currentGamepad1.copy(gamepad1);
         previousGamepad1.copy(currentGamepad1);
         if(!isAutoDriving) {
+            follower.startTeleopDrive();
             follower.setTeleOpMovementVectors(
                     -gamepad1.left_stick_y,
                     -gamepad1.left_stick_x,
@@ -77,8 +78,10 @@ public class RobotCentricTeleOp extends OpMode {
             isAutoDriving = true;
             scoreBasket = new Path(new BezierLine(new Point(follower.getPose()), new Point(scorePose)));
             scoreBasket.setLinearHeadingInterpolation(follower.getPose().getHeading(), scorePose.getHeading());
-            paths();
-            isAutoDriving = false;
+            follower.followPath(scoreBasket);
+            if (!follower.isBusy()) {
+                isAutoDriving = false;
+            }
         }
 
         /* Telemetry Outputs of our Follower */
@@ -92,21 +95,6 @@ public class RobotCentricTeleOp extends OpMode {
     public void setPathState(int pState) {
         pathState = pState;
         pathTimer.resetTimer();
-    }
-
-    public void paths() {
-        switch (pathState) {
-            case 0:
-                follower.followPath(scoreBasket);
-                setPathState(1);
-                break;
-            case 1:
-                if (!follower.isBusy()) {
-                    setPathState(-1);
-                    PoseStorage.CurrentPose = follower.getPose();
-                }
-                break;
-        }
     }
 
     /** We do not use this because everything automatically should disable **/
