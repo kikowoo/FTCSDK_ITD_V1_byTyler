@@ -31,6 +31,8 @@ public class RobotCentricTeleOp extends OpMode {
     private final Pose scorePose = new Pose(18, 130, Math.toRadians(315));
     private Gamepad currentGamepad1, previousGamepad1;
 
+    private boolean isAutoDriving = false;
+
     /** This method is call once when init is played, it initializes the follower **/
     @Override
     public void init() {
@@ -62,18 +64,21 @@ public class RobotCentricTeleOp extends OpMode {
     public void loop() {
         currentGamepad1.copy(gamepad1);
         previousGamepad1.copy(currentGamepad1);
-
-        follower.setTeleOpMovementVectors(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x,
-                true);
-        follower.update();
+        if(!isAutoDriving) {
+            follower.setTeleOpMovementVectors(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x,
+                    true);
+            follower.update();
+        }
 
         if(currentGamepad1.a && !previousGamepad1.a) {
+            isAutoDriving = true;
             scoreBasket = new Path(new BezierLine(new Point(follower.getPose()), new Point(scorePose)));
             scoreBasket.setLinearHeadingInterpolation(follower.getPose().getHeading(), scorePose.getHeading());
             paths();
+            isAutoDriving = false;
         }
 
         /* Telemetry Outputs of our Follower */
