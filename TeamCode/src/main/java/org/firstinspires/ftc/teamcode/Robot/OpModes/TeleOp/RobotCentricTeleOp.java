@@ -26,7 +26,6 @@ public class RobotCentricTeleOp extends OpMode {
     private Follower follower;
     private Path scoreBasket;
     private Timer pathTimer, actionTimer, opmodeTimer;
-    private int pathState;
     private final Pose startPose = PoseStorage.CurrentPose;
     private final Pose scorePose = new Pose(18, 130, Math.toRadians(315));
     private Gamepad currentGamepad1, previousGamepad1;
@@ -88,7 +87,7 @@ public class RobotCentricTeleOp extends OpMode {
         }
 
         if(currentGamepad1.left_bumper && !previousGamepad1.left_bumper) {
-            follower.setPose(new Pose(20, 20, 0));
+            follower.setPose(new Pose(18, 130, 315));
         }
 
         /* Telemetry Outputs of our Follower */
@@ -100,13 +99,10 @@ public class RobotCentricTeleOp extends OpMode {
         /* Update Telemetry to the Driver Hub */
         telemetry.update();
     }
-    public void setPathState(int pState) {
-        pathState = pState;
-        pathTimer.resetTimer();
-    }
 
     /** We do not use this because everything automatically should disable **/
     @Override
     public void stop() {
     }
+
 }
