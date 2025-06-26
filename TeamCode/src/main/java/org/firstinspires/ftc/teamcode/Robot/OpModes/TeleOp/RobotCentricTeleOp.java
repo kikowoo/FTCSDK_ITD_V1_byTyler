@@ -50,6 +50,15 @@ public class RobotCentricTeleOp extends LinearOpMode {
             previousGamepad1 = new Gamepad();
 
             follower.startTeleopDrive();
+
+            robot.colorSensor.enableLed(true);
+            robot.getColor();
+
+            if(currentGamepad1.x && !previousGamepad1.x){
+                robot.Color_Alliance = "Blue";
+            } else if (currentGamepad1.b && !currentGamepad1.b) {
+                robot.Color_Alliance = "Red";
+            }
         }
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -63,6 +72,10 @@ public class RobotCentricTeleOp extends LinearOpMode {
             Telemetry.Item PWR = telemetry.addData("Regular_mode", "LSY = 1.0, LSX = 1.0, RSX = 1.0");
             currentGamepad1.copy(gamepad1);
             previousGamepad1.copy(currentGamepad1);
+            robot.getColor();
+
+            robot.Intake_Poop(robot.intakeColor.equals(robot.Color_Alliance) || robot.intakeColor.equals("Yellow"));
+            
             if(currentGamepad1.a && !previousGamepad1.a) {
                 isAutoDriving = true;
                 follower.breakFollowing();
@@ -90,7 +103,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 LSY = 1.0;
                 LSX = 1.0;
                 RSX = 1.0;
-                PWR.setValue("Baby_mode", "LSY = 1.0, LSX = 1.0, RSX = 1.0");
+                PWR.setValue("Regular_mode", "LSY = 1.0, LSX = 1.0, RSX = 1.0");
                 telemetry.update();
             }
 
@@ -141,6 +154,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading in Degrees", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.addData("follower", follower.isBusy());
+            //telemetry.addData("Intake sampleColor", Intake.sampleColor);
             robot.TelemetryOutput();
             /* Update Telemetry to the Driver Hub */
             telemetry.update();

@@ -2,7 +2,9 @@ package org.firstinspires.ftc.teamcode.Robot.Structure.Hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.hardware.rev.RevColorSensorV3;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 public class BTRobotV1 {
@@ -13,21 +15,29 @@ public class BTRobotV1 {
     final public int MAX_VL_Height = 1200;
 
     public double HL_Extension = 0;
-    public double HL_Increment = 0.0001;
+    public double HL_Increment = 0.01;
     final public double MIN_HL_Distance = 0.0;
     final public double MAX_HL_Distance = 1.0;
 
     public double I_Rotation = 0.0;
-    public double I_Increment = 0.0001;
+    public double I_Increment = 0.01;
     final public double MIN_I_Rotation = 0.0;
     final public double MAX_I_Rotation = 1.0;
 
     public double DW_Rotation = 0;
-    public double DW_Increment = 0.0001;
+    public double DW_Increment = 0.01;
     final public double DW_MIN_Rotation = 0.0;
     final public double DW_MAX_Rotation = 1.0;
+    public double DA_Rotation = 0;
+    public double DA_Increment = 0.01;
+    final public double DA_MIN_Rotation = 0.0;
+    final public double DA_MAX_Rotation = 1.0;
 
-    public double Poop_Pose = 0;
+    public String intakeColor;
+
+    public String Color_Alliance = null;
+
+    public double Poop_Pose = 0.0;
 
     private LinearOpMode myOpMode;
     private ElapsedTime holdTimer = new ElapsedTime();
@@ -36,25 +46,31 @@ public class BTRobotV1 {
     public BTRobotV1(LinearOpMode opMode) {
         myOpMode = opMode;
     }
-
+    //NOTE: when not talking about a lift L indicates Left and R indicates Right
     public DcMotor VLL, VLR, I;
     public Servo HLL, HLR, IL, IR, DW, DC, IP, ADAL, ADAR;
+    public RevColorSensorV3 colorSensor;
+    private double redValue;
+    private double blueValue;
+    private double greenValue;
+    private double alphaValue; //light Intensity
+    private double targetValue = 1000;
 
     public void initialize(boolean showTelemetry) {
         //Vertical lift Motors
-        VLL = setupMotor("VLL", DcMotor.Direction.FORWARD);
-        VLR = setupMotor("VLR", DcMotor.Direction.REVERSE);
+        VLL = setupMotor("VLL", DcMotor.Direction.REVERSE);
+        VLR = setupMotor("VLR", DcMotor.Direction.FORWARD);
 
         //Horizontal lift Servo
-        HLL = setupServo("HLL", Servo.Direction.FORWARD);
-        HLR = setupServo("HLR", Servo.Direction.REVERSE);
+        HLL = setupServo("HLL", Servo.Direction.REVERSE);
+        HLR = setupServo("HLR", Servo.Direction.FORWARD);
 
         //Intake
         I = setupMotor("I", DcMotor.Direction.FORWARD);
 
         //Intake Rotation Servos
-        IL = setupServo("IL", Servo.Direction.FORWARD);
-        IR = setupServo("IR", Servo.Direction.REVERSE);
+        IL = setupServo("IL", Servo.Direction.REVERSE);
+        IR = setupServo("IR", Servo.Direction.FORWARD);
 
         //Intake Servo Horn
         IP = setupServo("ISH", Servo.Direction.FORWARD);
@@ -62,6 +78,14 @@ public class BTRobotV1 {
         //Deposit Servo DW = "Deposit Wrist" DC = "Deposit Claw"
         DW = setupServo("DW", Servo.Direction.FORWARD);
         DC = setupServo("DC", Servo.Direction.FORWARD);
+
+        //Deposit Arm ADAL = "Axon Deposit Arm Left" ADAR = "Axon Deposit Arm Right"
+        ADAL = setupServo("ADAL", Servo.Direction.FORWARD);
+        ADAR = setupServo("ADAR", Servo.Direction.REVERSE);
+
+        colorSensor = (RevColorSensorV3) myOpMode.hardwareMap.get("colorSensor");
+
+        colorSensor.enableLed(true);
     }
     private DcMotor setupMotor(String deviceName, DcMotor.Direction direction) {
         DcMotor aMotor = myOpMode.hardwareMap.get(DcMotor.class, deviceName);
@@ -90,6 +114,26 @@ public class BTRobotV1 {
         myOpMode.telemetry.addData("Intake_Rotation",  IR.getPosition());
         myOpMode.telemetry.addData("Deposit_Claw",  DC.getPosition());
         myOpMode.telemetry.addData("Deposit_Wrist",  DW.getPosition());
+        myOpMode.telemetry.addData("Red_Value", "%.2f", redValue);
+        myOpMode.telemetry.addData("Green_Value", "%.2f", greenValue);
+        myOpMode.telemetry.addData("Blue_Value", "%.2f", blueValue);
+        myOpMode.telemetry.addData("Alpha_Value", "%.2f", alphaValue);
+        myOpMode.telemetry.addData("Alliance_Color", Color_Alliance);
+    }
+
+    public void getColor(){
+        redValue = colorSensor.red();
+        greenValue = colorSensor.green();;
+        blueValue = colorSensor.blue();
+        alphaValue = colorSensor.alpha();
+
+        if (blueValue >= greenValue && blueValue >= redValue) {
+            intakeColor = "Blue";
+        } else if (greenValue >= redValue) {
+            intakeColor = "Yellow";
+        } else {
+            intakeColor = "Red";
+        }
     }
 
     public void Vertical_Lift(boolean t) {
@@ -139,6 +183,18 @@ public class BTRobotV1 {
         }
     }
 
+    public void Deposit_Arm(boolean t){
+        if(t){
+            DA_Rotation += DA_Increment;
+            DA_Rotation = Math.max(DA_MIN_Rotation, Math.min(DA_MAX_Rotation, DA_Rotation));
+            Setup_Deposit_Wrist(DA_Rotation);
+        } else {
+            DA_Rotation -= DA_Increment;
+            DA_Rotation = Math.max(DA_MIN_Rotation, Math.min(DA_MAX_Rotation, DA_Rotation));
+            Setup_Deposit_Wrist(DA_Rotation);
+        }
+    }
+
     public void Setup_Vertical_Lift(int EXT, double pow) {
         VL_Extension = EXT;
         VLL.setTargetPosition(EXT);
@@ -182,5 +238,11 @@ public class BTRobotV1 {
         } else {
             IP.setPosition(0.0);
         }
+    }
+
+    public void Setup_Deposit_Arm(double Rot){
+        DA_Rotation = Rot;
+        ADAR.setPosition(Rot);
+        ADAL.setPosition(Rot);
     }
 }
