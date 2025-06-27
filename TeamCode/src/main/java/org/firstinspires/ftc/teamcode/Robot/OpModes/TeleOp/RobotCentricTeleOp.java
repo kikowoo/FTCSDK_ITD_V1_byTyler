@@ -131,13 +131,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 robot.Deposit_Wrist(true);
             }
 
-            if(gamepad2.left_stick_y < 0.0) {
-                robot.Intake(-gamepad2.left_stick_y);
-                robot.Intake_Pose(true);
-            } else if (gamepad2.left_stick_y > 0.0) {
-                robot.Intake(-gamepad2.left_stick_y);
-                robot.Intake_Pose(false);
-            }
+            robot.Intake(-gamepad2.left_stick_y);
 
             if(!isAutoDriving) {
                 follower.setTeleOpMovementVectors(
