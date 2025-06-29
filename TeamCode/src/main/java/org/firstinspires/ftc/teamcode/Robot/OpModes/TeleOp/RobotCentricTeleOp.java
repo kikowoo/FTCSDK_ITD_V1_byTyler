@@ -108,9 +108,9 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 telemetry.update();
             }
 
-            if((-gamepad2.right_stick_y) > 0.0){
+            if(gamepad2.right_stick_y < 0.0){
                 robot.Horizontal_Lift(true);
-            } else if((-gamepad2.right_stick_y) < 0.0) {
+            } else if(gamepad2.right_stick_y > 0.0) {
                 robot.Horizontal_Lift(false);
             }
 
