@@ -13,14 +13,20 @@ public class BTRobotV1 {
     public int VL_Increment = 3;
     final public int MIN_VL_Height = 0;
     final public int MAX_VL_Height = 1200;
-
+    /*
     public double HL_Extension = 0;
     public double HL_Increment = 0.01;
     final public double MIN_HL_Distance = 0.0;
     final public double MAX_HL_Distance = 1.0;
+     */
+
+    public int HL_Extension = 0;
+    public int HL_Increment = 10;
+    final public int MIN_HL_Distance = 0;
+    final public int MAX_HL_Distance = 300;
 
     public double I_Rotation = 0.0;
-    public double I_Increment = 0.01;
+    public double I_Increment = 0.1;
     final public double MIN_I_Rotation = 0.0;
     final public double MAX_I_Rotation = 1.0;
 
@@ -35,8 +41,6 @@ public class BTRobotV1 {
 
     public String intakeColor;
 
-    public String Color_Alliance = null;
-
     public double Poop_Pose = 0.0;
 
     private LinearOpMode myOpMode;
@@ -47,7 +51,7 @@ public class BTRobotV1 {
         myOpMode = opMode;
     }
     //NOTE: when not talking about a lift L indicates Left and R indicates Right
-    public DcMotor VLL, VLR, I;
+    public DcMotor VLL, VLR, I, HL;
     public Servo HLL, HLR, IL, IR, DW, DC, IP, ADAL, ADAR;
     public RevColorSensorV3 colorSensor;
     private double redValue;
@@ -62,15 +66,18 @@ public class BTRobotV1 {
         VLR = setupMotor("VLR", DcMotor.Direction.FORWARD);
 
         //Horizontal lift Servo
-        HLL = setupServo("HLL", Servo.Direction.REVERSE);
-        HLR = setupServo("HLR", Servo.Direction.FORWARD);
+        //HLL = setupServo("HLL", Servo.Direction.REVERSE);
+        //HLR = setupServo("HLR", Servo.Direction.FORWARD);
+
+        //Horizontal life Motors
+        HL = setupMotor("HL", DcMotorSimple.Direction.FORWARD);
 
         //Intake
-        I = setupMotor("I", DcMotor.Direction.FORWARD);
+        I = setupDriveMotor("I", DcMotor.Direction.REVERSE);
 
         //Intake Rotation Servos
-        IL = setupServo("IL", Servo.Direction.REVERSE);
-        IR = setupServo("IR", Servo.Direction.FORWARD);
+        IL = setupServo("IL", Servo.Direction.FORWARD);
+        IR = setupServo("IR", Servo.Direction.REVERSE);
 
         //Intake Servo Horn
         IP = setupServo("ISH", Servo.Direction.FORWARD);
@@ -87,6 +94,14 @@ public class BTRobotV1 {
 
         colorSensor.enableLed(true);
     }
+
+    //Setups the Drive Motor As Well As Setting Direction
+    private DcMotor setupDriveMotor(String deviceName, DcMotor.Direction direction) {
+        DcMotor aMotor = myOpMode.hardwareMap.get(DcMotor.class, deviceName);
+        aMotor.setDirection(direction);
+        return aMotor;
+    }
+
     private DcMotor setupMotor(String deviceName, DcMotor.Direction direction) {
         DcMotor aMotor = myOpMode.hardwareMap.get(DcMotor.class, deviceName);
         aMotor.setDirection(direction);
@@ -110,15 +125,17 @@ public class BTRobotV1 {
     }
     public void TelemetryOutput() {
         myOpMode.telemetry.addData("Vertical_Lift",  VLR.getCurrentPosition());
-        myOpMode.telemetry.addData("Horizontal_Lift",  HLR.getPosition());
+        myOpMode.telemetry.addData("Horizontal_Lift",  HL.getCurrentPosition());
         myOpMode.telemetry.addData("Intake_Rotation",  IR.getPosition());
         myOpMode.telemetry.addData("Deposit_Claw",  DC.getPosition());
         myOpMode.telemetry.addData("Deposit_Wrist",  DW.getPosition());
+        myOpMode.telemetry.addData("Deposit_Arm", ADAR.getPosition());
         myOpMode.telemetry.addData("Red_Value", "%.2f", redValue);
         myOpMode.telemetry.addData("Green_Value", "%.2f", greenValue);
         myOpMode.telemetry.addData("Blue_Value", "%.2f", blueValue);
         myOpMode.telemetry.addData("Alpha_Value", "%.2f", alphaValue);
-        myOpMode.telemetry.addData("Alliance_Color", Color_Alliance);
+        myOpMode.telemetry.addData("Color", intakeColor);
+        myOpMode.telemetry.addData("Intake Pow", I.getPower());
     }
 
     public void getColor(){
@@ -152,13 +169,26 @@ public class BTRobotV1 {
         if(t){
             HL_Extension += HL_Increment;
             HL_Extension = Math.max(MIN_HL_Distance, Math.min(MAX_HL_Distance, HL_Extension));
+            Setup_Horizontal_Lift(HL_Extension, 1.0);
+        } else {
+            HL_Extension -= HL_Increment;
+            HL_Extension = Math.max(MIN_HL_Distance, Math.min(MAX_HL_Distance, HL_Extension));
+            Setup_Horizontal_Lift(HL_Extension, 1.0);
+        }
+    }
+
+    /*public void Horizontal_Lift(boolean t) {
+        if(t){
+            HL_Extension += HL_Increment;
+            HL_Extension = Math.max(MIN_HL_Distance, Math.min(MAX_HL_Distance, HL_Extension));
             Setup_Horizontal_Lift(HL_Extension);
         } else {
             HL_Extension -= HL_Increment;
             HL_Extension = Math.max(MIN_HL_Distance, Math.min(MAX_HL_Distance, HL_Extension));
             Setup_Horizontal_Lift(HL_Extension);
         }
-    }
+    }*/
+
     public void Intake_Pose(boolean t) {
         if(t){
             I_Rotation += I_Increment;
@@ -187,11 +217,11 @@ public class BTRobotV1 {
         if(t){
             DA_Rotation += DA_Increment;
             DA_Rotation = Math.max(DA_MIN_Rotation, Math.min(DA_MAX_Rotation, DA_Rotation));
-            Setup_Deposit_Wrist(DA_Rotation);
+            Setup_Deposit_Arm(DA_Rotation);
         } else {
             DA_Rotation -= DA_Increment;
             DA_Rotation = Math.max(DA_MIN_Rotation, Math.min(DA_MAX_Rotation, DA_Rotation));
-            Setup_Deposit_Wrist(DA_Rotation);
+            Setup_Deposit_Arm(DA_Rotation);
         }
     }
 
@@ -203,16 +233,32 @@ public class BTRobotV1 {
         VLR.setPower(pow);
     }
 
-    public void Setup_Horizontal_Lift(double EXT) {
+    public void Setup_Horizontal_Lift(int EXT, double pow) {
+        HL_Extension = EXT;
+        HL.setTargetPosition(EXT);
+        HL.setPower(pow);
+    }
+
+    /*public void Setup_Horizontal_Lift(double EXT) {
         HL_Extension = EXT;
         HLL.setPosition(EXT);
         HLR.setPosition(EXT);
-    }
+    }*/
 
     public void Setup_Intake_Pose(double Rot) {
         I_Rotation = Rot;
         IL.setPosition(Rot);
         IR.setPosition(Rot);
+    }
+
+    public void Setup_Intake_Pose_RTP(boolean t) {
+        if(t) {
+            IL.setPosition(1.0);
+            IR.setPosition(1.0);
+        } else{
+            IL.setPosition(0.0);
+            IR.setPosition(0.0);
+        }
     }
 
     public void Setup_Deposit_Claw(boolean t) {
@@ -234,9 +280,9 @@ public class BTRobotV1 {
 
     public void Intake_Poop(boolean t) {
         if(t){
-            IP.setPosition(1.0);
-        } else {
             IP.setPosition(0.0);
+        } else {
+            IP.setPosition(0.5);
         }
     }
 

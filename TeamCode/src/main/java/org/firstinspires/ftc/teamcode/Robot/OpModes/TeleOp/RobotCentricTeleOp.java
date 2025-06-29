@@ -27,6 +27,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
     private Path scoreBasket;
     private Timer pathTimer, actionTimer, opmodeTimer;
     private final Pose startPose = PoseStorage.CurrentPose;
+    public String Color_Alliance = null;
     private final Pose scorePose = new Pose(18, 130, Math.toRadians(315));
     private Gamepad currentGamepad1, previousGamepad1;
 
@@ -53,12 +54,6 @@ public class RobotCentricTeleOp extends LinearOpMode {
 
             robot.colorSensor.enableLed(true);
             robot.getColor();
-
-            if(currentGamepad1.x && !previousGamepad1.x){
-                robot.Color_Alliance = "Blue";
-            } else if (currentGamepad1.b && !currentGamepad1.b) {
-                robot.Color_Alliance = "Red";
-            }
         }
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -74,7 +69,13 @@ public class RobotCentricTeleOp extends LinearOpMode {
             previousGamepad1.copy(currentGamepad1);
             robot.getColor();
 
-            robot.Intake_Poop(robot.intakeColor.equals(robot.Color_Alliance) || robot.intakeColor.equals("Yellow"));
+            if(currentGamepad1.x && !previousGamepad1.x){
+                Color_Alliance = "Blue";
+            } else if (currentGamepad1.b && !currentGamepad1.b) {
+                Color_Alliance = "Red";
+            }
+
+            robot.Intake_Poop(robot.intakeColor.equals(Color_Alliance) || robot.intakeColor.equals("Yellow"));
             
             if(currentGamepad1.a && !previousGamepad1.a) {
                 isAutoDriving = true;
@@ -107,9 +108,9 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 telemetry.update();
             }
 
-            if(gamepad2.right_stick_y > 0.0){
+            if((-gamepad2.right_stick_y) > 0.0){
                 robot.Horizontal_Lift(true);
-            } else if(gamepad2.right_stick_y < 0.0) {
+            } else if((-gamepad2.right_stick_y) < 0.0) {
                 robot.Horizontal_Lift(false);
             }
 
@@ -131,13 +132,25 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 robot.Deposit_Wrist(true);
             }
 
-            robot.Intake(-gamepad2.left_stick_y);
+            robot.Intake(gamepad2.left_stick_y);
+
+            if(gamepad1.dpad_up){
+                robot.Deposit_Arm(true);
+            } else if(gamepad1.dpad_down) {
+                robot.Deposit_Arm(false);
+            }
+
+            if(gamepad2.left_bumper) {
+                robot.Setup_Intake_Pose_RTP(true);
+            } else if(gamepad2.right_bumper) {
+                robot.Setup_Intake_Pose_RTP(false);
+            }
 
             if(!isAutoDriving) {
                 follower.setTeleOpMovementVectors(
-                        -gamepad1.left_stick_y * LSY,
-                        -gamepad1.left_stick_x * LSX,
-                        -gamepad1.right_stick_x * RSX,
+                        gamepad1.left_stick_y * LSY,
+                        gamepad1.left_stick_x * LSX,
+                        gamepad1.right_stick_x * RSX,
                         true);
                 follower.update();
             }
@@ -148,6 +161,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading in Degrees", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.addData("follower", follower.isBusy());
+            telemetry.addData("Color_Allience", Color_Alliance);
             //telemetry.addData("Intake sampleColor", Intake.sampleColor);
             robot.TelemetryOutput();
             /* Update Telemetry to the Driver Hub */
