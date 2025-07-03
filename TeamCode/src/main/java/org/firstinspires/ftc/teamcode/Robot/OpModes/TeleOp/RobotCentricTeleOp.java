@@ -29,11 +29,13 @@ public class RobotCentricTeleOp extends LinearOpMode {
     private final Pose startPose = PoseStorage.CurrentPose;
     public String Color_Alliance = null;
     private final Pose scorePose = new Pose(18, 130, Math.toRadians(315));
-    private Gamepad currentGamepad1, previousGamepad1;
 
     private double LSY = 1.0, LSX = 1.0, RSX = 1.0;
 
     private boolean isAutoDriving = false;
+
+    private Gamepad currentGamepad1 = new Gamepad();
+    private Gamepad previousGamepad1 = new Gamepad();
     @Override
     public void runOpMode() {
         robot.initialize(true);
@@ -46,9 +48,6 @@ public class RobotCentricTeleOp extends LinearOpMode {
             pathTimer = new Timer();
             opmodeTimer = new Timer();
             opmodeTimer.resetTimer();
-
-            currentGamepad1 = new Gamepad();
-            previousGamepad1 = new Gamepad();
 
             follower.startTeleopDrive();
 
@@ -65,13 +64,13 @@ public class RobotCentricTeleOp extends LinearOpMode {
 
         while(opModeIsActive()){
             Telemetry.Item PWR = telemetry.addData("Regular_mode", "LSY = 1.0, LSX = 1.0, RSX = 1.0");
-            currentGamepad1.copy(gamepad1);
             previousGamepad1.copy(currentGamepad1);
+            currentGamepad1.copy(gamepad1);
             robot.getColor();
 
             if(currentGamepad1.x && !previousGamepad1.x){
                 Color_Alliance = "Blue";
-            } else if (currentGamepad1.b && !currentGamepad1.b) {
+            } else if (currentGamepad1.b && !previousGamepad1.b) {
                 Color_Alliance = "Red";
             }
 
@@ -108,9 +107,9 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 telemetry.update();
             }
 
-            if(gamepad2.right_stick_y < 0.0){
+            if(gamepad2.right_stick_y > 0.0){
                 robot.Horizontal_Lift(true);
-            } else if(gamepad2.right_stick_y > 0.0) {
+            } else if(gamepad2.right_stick_y < 0.0) {
                 robot.Horizontal_Lift(false);
             }
 
@@ -126,13 +125,13 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 robot.Setup_Deposit_Claw(true);
             }
 
-            if(gamepad2.right_trigger > 0.0){
+            if(gamepad1.right_trigger > 0.0){
                 robot.Deposit_Wrist(false);
-            } else if (gamepad2.left_trigger > 0.0) {
+            } else if (gamepad1.left_trigger > 0.0) {
                 robot.Deposit_Wrist(true);
             }
 
-            robot.Intake(gamepad2.left_stick_y);
+            robot.Intake(-gamepad2.left_stick_y);
 
             if(gamepad1.dpad_up){
                 robot.Deposit_Arm(true);
@@ -140,9 +139,10 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 robot.Deposit_Arm(false);
             }
 
-            if(gamepad2.left_bumper) {
+            if(gamepad2.left_trigger > 0.0) {
                 robot.Setup_Intake_Pose_RTP(true);
-            } else if(gamepad2.right_bumper) {
+                robot.Setup_Horizontal_Lift(30,0.8);
+            } else if(gamepad2.right_trigger > 0.0) {
                 robot.Setup_Intake_Pose_RTP(false);
             }
 

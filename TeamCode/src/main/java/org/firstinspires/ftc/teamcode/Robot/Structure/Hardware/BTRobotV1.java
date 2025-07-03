@@ -31,9 +31,10 @@ public class BTRobotV1 {
     final public double MAX_I_Rotation = 1.0;
 
     public double DW_Rotation = 0;
-    public double DW_Increment = 0.01;
+    public double DW_Increment = 0.004;
     final public double DW_MIN_Rotation = 0.0;
-    final public double DW_MAX_Rotation = 1.0;
+    final public double DW_MAX_Rotation = 0.24;
+
     public double DA_Rotation = 0;
     public double DA_Increment = 0.01;
     final public double DA_MIN_Rotation = 0.0;
@@ -99,6 +100,7 @@ public class BTRobotV1 {
     private DcMotor setupDriveMotor(String deviceName, DcMotor.Direction direction) {
         DcMotor aMotor = myOpMode.hardwareMap.get(DcMotor.class, deviceName);
         aMotor.setDirection(direction);
+        aMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         return aMotor;
     }
 
@@ -126,6 +128,7 @@ public class BTRobotV1 {
     public void TelemetryOutput() {
         myOpMode.telemetry.addData("Vertical_Lift",  VLR.getCurrentPosition());
         myOpMode.telemetry.addData("Horizontal_Lift",  HL.getCurrentPosition());
+        myOpMode.telemetry.addData("HL", HL_Extension);
         myOpMode.telemetry.addData("Intake_Rotation",  IR.getPosition());
         myOpMode.telemetry.addData("Deposit_Claw",  DC.getPosition());
         myOpMode.telemetry.addData("Deposit_Wrist",  DW.getPosition());
@@ -167,7 +170,7 @@ public class BTRobotV1 {
 
     public void Horizontal_Lift(boolean t) {
         if(t){
-            HL_Extension += HL_Increment;
+            HL_Extension += 25;
             HL_Extension = Math.max(MIN_HL_Distance, Math.min(MAX_HL_Distance, HL_Extension));
             Setup_Horizontal_Lift(HL_Extension, 1.0);
         } else {
@@ -227,15 +230,15 @@ public class BTRobotV1 {
 
     public void Setup_Vertical_Lift(int EXT, double pow) {
         VL_Extension = EXT;
-        VLL.setTargetPosition(EXT);
-        VLR.setTargetPosition(EXT);
+        VLL.setTargetPosition(VL_Extension);
+        VLR.setTargetPosition(VL_Extension);
         VLL.setPower(pow);
         VLR.setPower(pow);
     }
 
     public void Setup_Horizontal_Lift(int EXT, double pow) {
         HL_Extension = EXT;
-        HL.setTargetPosition(EXT);
+        HL.setTargetPosition(HL_Extension);
         HL.setPower(pow);
     }
 
@@ -247,14 +250,14 @@ public class BTRobotV1 {
 
     public void Setup_Intake_Pose(double Rot) {
         I_Rotation = Rot;
-        IL.setPosition(Rot);
-        IR.setPosition(Rot);
+        IL.setPosition(I_Rotation);
+        IR.setPosition(I_Rotation);
     }
 
     public void Setup_Intake_Pose_RTP(boolean t) {
         if(t) {
-            IL.setPosition(1.0);
-            IR.setPosition(1.0);
+            IL.setPosition(0.75);
+            IR.setPosition(0.75);
         } else{
             IL.setPosition(0.0);
             IR.setPosition(0.0);
@@ -263,7 +266,7 @@ public class BTRobotV1 {
 
     public void Setup_Deposit_Claw(boolean t) {
         if(t){
-            DC.setPosition(1.0);
+            DC.setPosition(0.2);
         } else {
             DC.setPosition(0.0);
         }
@@ -271,7 +274,7 @@ public class BTRobotV1 {
 
     public void Setup_Deposit_Wrist(double Rot) {
         DW_Rotation = Rot;
-        DW.setPosition(Rot);
+        DW.setPosition(DW_Rotation);
     }
 
     public void Intake(double pow) {
@@ -288,7 +291,7 @@ public class BTRobotV1 {
 
     public void Setup_Deposit_Arm(double Rot){
         DA_Rotation = Rot;
-        ADAR.setPosition(Rot);
-        ADAL.setPosition(Rot);
+        ADAR.setPosition(DA_Rotation);
+        ADAL.setPosition(DA_Rotation);
     }
 }
