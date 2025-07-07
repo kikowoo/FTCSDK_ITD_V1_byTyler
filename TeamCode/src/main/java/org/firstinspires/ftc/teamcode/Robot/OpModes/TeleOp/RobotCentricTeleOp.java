@@ -76,7 +76,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
 
             robot.Intake_Poop(robot.intakeColor.equals(Color_Alliance) || robot.intakeColor.equals("Yellow"));
             
-            if(currentGamepad1.a && !previousGamepad1.a) {
+            if(currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
                 isAutoDriving = true;
                 follower.breakFollowing();
                 scoreBasket = new Path(new BezierLine(new Point(follower.getPose()), new Point(scorePose)));
@@ -84,7 +84,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 follower.followPath(scoreBasket);
             }
 
-            if(currentGamepad1.start && !previousGamepad1.start){
+            if(currentGamepad1.right_bumper && !previousGamepad1.right_bumper){
                 isAutoDriving = false;
                 follower.startTeleopDrive();
             }
@@ -93,13 +93,13 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 follower.setPose(new Pose(18, 130, 315));
             }
 
-            if(currentGamepad1.dpad_down && !previousGamepad1.dpad_down) {
+            if(currentGamepad1.a && !previousGamepad1.a) {
                 LSY = 0.5;
                 LSX = 0.5;
                 RSX = 0.3;
                 PWR.setValue("Baby_mode", "LSY = 0.5, LSX = 0.5, RSX = 0.3");
                 telemetry.update();
-            } else if (currentGamepad1.dpad_up && !previousGamepad1.dpad_up) {
+            } else if (currentGamepad1.y && !previousGamepad1.y) {
                 LSY = 1.0;
                 LSX = 1.0;
                 RSX = 1.0;
@@ -125,17 +125,17 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 robot.Setup_Deposit_Claw(true);
             }
 
-            if(gamepad1.right_trigger > 0.0){
+            if(gamepad2.left_stick_x > 0.0){
                 robot.Deposit_Wrist(false);
-            } else if (gamepad1.left_trigger > 0.0) {
+            } else if (gamepad2.left_stick_x < 0.0) {
                 robot.Deposit_Wrist(true);
             }
 
             robot.Intake(-gamepad2.left_stick_y);
 
-            if(gamepad1.dpad_up){
+            if(gamepad2.left_bumper){
                 robot.Deposit_Arm(true);
-            } else if(gamepad1.dpad_down) {
+            } else if(gamepad2.right_bumper) {
                 robot.Deposit_Arm(false);
             }
 
@@ -144,6 +144,16 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 robot.Setup_Horizontal_Lift(30,0.8);
             } else if(gamepad2.right_trigger > 0.0) {
                 robot.Setup_Intake_Pose_RTP(false);
+            }
+
+            if(gamepad2.dpad_up){
+                robot.HighBasketScore();
+            } else if (gamepad2.dpad_left) {
+                robot.SpecimenGrab();
+            } else if (gamepad2.dpad_right) {
+                robot.SpecimenScore();
+            } else if (gamepad2.dpad_down) {
+                robot.TransferSample();
             }
 
             if(!isAutoDriving) {

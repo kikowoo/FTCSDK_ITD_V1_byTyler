@@ -7,12 +7,13 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
+import org.firstinspires.ftc.teamcode.Robot.Structure.Software.Constants;
 public class BTRobotV1 {
-
-    public int VL_Extension = 0;
-    public int VL_Increment = 3;
+    Constants constants;
+    public int VL_Extension = 10;
+    public int VL_Increment = 40;
     final public int MIN_VL_Height = 0;
-    final public int MAX_VL_Height = 1200;
+    final public int MAX_VL_Height = 810;
     /*
     public double HL_Extension = 0;
     public double HL_Increment = 0.01;
@@ -36,9 +37,9 @@ public class BTRobotV1 {
     final public double DW_MAX_Rotation = 0.24;
 
     public double DA_Rotation = 0;
-    public double DA_Increment = 0.01;
-    final public double DA_MIN_Rotation = 0.0;
-    final public double DA_MAX_Rotation = 1.0;
+    public double DA_Increment = 0.1;
+    final public double DA_MIN_Rotation = 0.05;
+    final public double DA_MAX_Rotation = 0.9;
 
     public String intakeColor;
 
@@ -63,8 +64,8 @@ public class BTRobotV1 {
 
     public void initialize(boolean showTelemetry) {
         //Vertical lift Motors
-        VLL = setupMotor("VLL", DcMotor.Direction.REVERSE);
-        VLR = setupMotor("VLR", DcMotor.Direction.FORWARD);
+        VLL = setupMotor("VLL", DcMotor.Direction.FORWARD);
+        VLR = setupMotor("VLR", DcMotor.Direction.REVERSE);
 
         //Horizontal lift Servo
         //HLL = setupServo("HLL", Servo.Direction.REVERSE);
@@ -89,7 +90,7 @@ public class BTRobotV1 {
 
         //Deposit Arm ADAL = "Axon Deposit Arm Left" ADAR = "Axon Deposit Arm Right"
         ADAL = setupServo("ADAL", Servo.Direction.FORWARD);
-        ADAR = setupServo("ADAR", Servo.Direction.REVERSE);
+        ADAR = setupServo("ADAR", Servo.Direction.FORWARD);
 
         colorSensor = (RevColorSensorV3) myOpMode.hardwareMap.get("colorSensor");
 
@@ -162,7 +163,7 @@ public class BTRobotV1 {
             VL_Extension = Math.max(MIN_VL_Height, Math.min(MAX_VL_Height, VL_Extension));
             Setup_Vertical_Lift(VL_Extension, 1.0);
         } else {
-            VL_Extension -= VL_Increment;
+            VL_Extension -= VL_Increment * 4;
             VL_Extension = Math.max(MIN_VL_Height, Math.min(MAX_VL_Height, VL_Extension));
             Setup_Vertical_Lift(VL_Extension, 1.0);
         }
@@ -293,5 +294,36 @@ public class BTRobotV1 {
         DA_Rotation = Rot;
         ADAR.setPosition(DA_Rotation);
         ADAL.setPosition(DA_Rotation);
+    }
+
+    public void SpecimenScore(){
+        Setup_Deposit_Claw(constants.INIT_SpecimenScoreClawPose);
+        Setup_Deposit_Arm(constants.SpecimenScoreArmPose);
+        Setup_Deposit_Wrist(constants.SpecimenScoreWristPose);
+        Setup_Vertical_Lift(constants.SpecimenScoreSlidePose, 1.0);
+        Setup_Deposit_Claw(constants.FINAL_SpecimenScoreClawPose);
+    }
+
+    public void HighBasketScore(){
+        Setup_Deposit_Claw(constants.INIT_HighBasketScoreClawPose);
+        Setup_Deposit_Arm(constants.HighBasketScoreArmPose);
+        Setup_Deposit_Wrist(constants.HighBasketScoreWristPose);
+        Setup_Vertical_Lift(constants.HighBasketScoreSlidePose, 1.0);
+        Setup_Deposit_Claw(constants.FINAL_HighBasketScoreClawPose);
+    }
+
+    public void SpecimenGrab(){
+        Setup_Deposit_Claw(constants.INIT_SpecimenGrabClawPose);
+        Setup_Deposit_Arm(constants.SpecimenGrabArmPose);
+        Setup_Deposit_Wrist(constants.SpecimenGrabWristPose);
+        Setup_Vertical_Lift(constants.SpecimenGrabSlidePose, 1.0);
+        Setup_Deposit_Claw(constants.FINAL_SpecimenGrabClawPose);
+    }
+
+    public void TransferSample(){
+        Setup_Deposit_Claw(constants.TransferSampleClawPose);
+        Setup_Deposit_Arm(constants.TransferSampleArmPose);
+        Setup_Deposit_Wrist(constants.TransferSampleWristPose);
+        Setup_Vertical_Lift(constants.TransferSampleSlidePose, 1.0);
     }
 }
