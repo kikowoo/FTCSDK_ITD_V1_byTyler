@@ -7,13 +7,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
-import org.firstinspires.ftc.teamcode.Robot.Structure.Software.Constants;
 public class BTRobotV1 {
-    Constants constants;
-    public int VL_Extension = 10;
-    public int VL_Increment = 40;
+    public int VL_Extension = 0;
+    public int VL_Increment = 50;
     final public int MIN_VL_Height = 0;
-    final public int MAX_VL_Height = 810;
+    final public int MAX_VL_Height = 760;
     /*
     public double HL_Extension = 0;
     public double HL_Increment = 0.01;
@@ -38,7 +36,7 @@ public class BTRobotV1 {
 
     public double DA_Rotation = 0;
     public double DA_Increment = 0.1;
-    final public double DA_MIN_Rotation = 0.05;
+    final public double DA_MIN_Rotation = 0.0;
     final public double DA_MAX_Rotation = 0.9;
 
     public String intakeColor;
@@ -163,7 +161,7 @@ public class BTRobotV1 {
             VL_Extension = Math.max(MIN_VL_Height, Math.min(MAX_VL_Height, VL_Extension));
             Setup_Vertical_Lift(VL_Extension, 1.0);
         } else {
-            VL_Extension -= VL_Increment * 4;
+            VL_Extension -= VL_Increment * 5;
             VL_Extension = Math.max(MIN_VL_Height, Math.min(MAX_VL_Height, VL_Extension));
             Setup_Vertical_Lift(VL_Extension, 1.0);
         }
@@ -257,8 +255,8 @@ public class BTRobotV1 {
 
     public void Setup_Intake_Pose_RTP(boolean t) {
         if(t) {
-            IL.setPosition(0.75);
-            IR.setPosition(0.75);
+            IL.setPosition(1.0);
+            IR.setPosition(1.0);
         } else{
             IL.setPosition(0.0);
             IR.setPosition(0.0);
@@ -297,33 +295,31 @@ public class BTRobotV1 {
     }
 
     public void SpecimenScore(){
-        Setup_Deposit_Claw(constants.INIT_SpecimenScoreClawPose);
-        Setup_Deposit_Arm(constants.SpecimenScoreArmPose);
-        Setup_Deposit_Wrist(constants.SpecimenScoreWristPose);
-        Setup_Vertical_Lift(constants.SpecimenScoreSlidePose, 1.0);
-        Setup_Deposit_Claw(constants.FINAL_SpecimenScoreClawPose);
+        Setup_Deposit_Claw(false);
+        Setup_Deposit_Arm(0.15);
+        Setup_Deposit_Wrist(0.24);
+        Setup_Vertical_Lift(400, 1.0);
     }
 
     public void HighBasketScore(){
-        Setup_Deposit_Claw(constants.INIT_HighBasketScoreClawPose);
-        Setup_Deposit_Arm(constants.HighBasketScoreArmPose);
-        Setup_Deposit_Wrist(constants.HighBasketScoreWristPose);
-        Setup_Vertical_Lift(constants.HighBasketScoreSlidePose, 1.0);
-        Setup_Deposit_Claw(constants.FINAL_HighBasketScoreClawPose);
+        Setup_Deposit_Claw(false);
+        Setup_Deposit_Arm(0.5);
+        Setup_Deposit_Wrist(0.0);
+        Setup_Horizontal_Lift(40,1.0);
+        Setup_Vertical_Lift(760, 1.0);
     }
 
     public void SpecimenGrab(){
-        Setup_Deposit_Claw(constants.INIT_SpecimenGrabClawPose);
-        Setup_Deposit_Arm(constants.SpecimenGrabArmPose);
-        Setup_Deposit_Wrist(constants.SpecimenGrabWristPose);
-        Setup_Vertical_Lift(constants.SpecimenGrabSlidePose, 1.0);
-        Setup_Deposit_Claw(constants.FINAL_SpecimenGrabClawPose);
+        Setup_Deposit_Claw(true);
+        Setup_Deposit_Arm(0.85);
+        Setup_Deposit_Wrist(0.185);
+        Setup_Vertical_Lift(0, 1.0);
     }
 
     public void TransferSample(){
-        Setup_Deposit_Claw(constants.TransferSampleClawPose);
-        Setup_Deposit_Arm(constants.TransferSampleArmPose);
-        Setup_Deposit_Wrist(constants.TransferSampleWristPose);
-        Setup_Vertical_Lift(constants.TransferSampleSlidePose, 1.0);
+        Setup_Deposit_Claw(true);
+        Setup_Deposit_Arm(0.0);
+        Setup_Deposit_Wrist(0.12);
+        Setup_Vertical_Lift(0, 1.0);
     }
 }
