@@ -29,15 +29,15 @@ public class BTRobotV1 {
     final public double MIN_I_Rotation = 0.0;
     final public double MAX_I_Rotation = 1.0;
 
-    public double DW_Rotation = 0;
-    public double DW_Increment = 0.004;
-    final public double DW_MIN_Rotation = 0.0;
-    final public double DW_MAX_Rotation = 0.24;
+    public double DW_Rotation = 0.1;
+    public double DW_Increment = 0.01;
+    final public double DW_MIN_Rotation = 0.1;
+    final public double DW_MAX_Rotation = 0.31;
 
     public double DA_Rotation = 0;
-    public double DA_Increment = 0.1;
+    public double DA_Increment = 0.01;
     final public double DA_MIN_Rotation = 0.0;
-    final public double DA_MAX_Rotation = 0.9;
+    final public double DA_MAX_Rotation = 0.95;
 
     public String intakeColor;
 
@@ -265,7 +265,7 @@ public class BTRobotV1 {
 
     public void Setup_Deposit_Claw(boolean t) {
         if(t){
-            DC.setPosition(0.2);
+            DC.setPosition(0.25);
         } else {
             DC.setPosition(0.0);
         }
@@ -296,30 +296,30 @@ public class BTRobotV1 {
 
     public void SpecimenScore(){
         Setup_Deposit_Claw(false);
-        Setup_Deposit_Arm(0.15);
-        Setup_Deposit_Wrist(0.24);
-        Setup_Vertical_Lift(400, 1.0);
+        Setup_Deposit_Arm(0.22);
+        Setup_Deposit_Wrist(0.34);
+        Setup_Vertical_Lift(475, 1.0);
     }
 
     public void HighBasketScore(){
         Setup_Deposit_Claw(false);
+        Setup_Horizontal_Lift(80,1.0);
         Setup_Deposit_Arm(0.5);
-        Setup_Deposit_Wrist(0.0);
-        Setup_Horizontal_Lift(40,1.0);
+        Setup_Deposit_Wrist(0.1);
         Setup_Vertical_Lift(760, 1.0);
     }
 
     public void SpecimenGrab(){
         Setup_Deposit_Claw(true);
-        Setup_Deposit_Arm(0.85);
-        Setup_Deposit_Wrist(0.185);
-        Setup_Vertical_Lift(0, 1.0);
+        Setup_Deposit_Arm(0.95);
+        Setup_Deposit_Wrist(0.285);
+        Setup_Vertical_Lift(80, 1.0);
     }
 
     public void TransferSample(){
         Setup_Deposit_Claw(true);
-        Setup_Deposit_Arm(0.0);
-        Setup_Deposit_Wrist(0.12);
+        Setup_Deposit_Arm(0.05);
+        Setup_Deposit_Wrist(0.16);
         Setup_Vertical_Lift(0, 1.0);
     }
 }
