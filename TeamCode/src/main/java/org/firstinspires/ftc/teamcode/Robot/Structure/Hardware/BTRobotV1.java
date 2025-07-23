@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Robot.Structure.Hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.hardware.rev.RevColorSensorV3;
 
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 public class BTRobotV1 {
     public int VL_Extension = 0;
@@ -19,10 +21,10 @@ public class BTRobotV1 {
     final public double MAX_HL_Distance = 1.0;
      */
 
-    public int HL_Extension = 0;
-    public int HL_Increment = 10;
-    final public int MIN_HL_Distance = 0;
-    final public int MAX_HL_Distance = 300;
+    public double HL_Extension = 0;
+    public double HL_Increment = 0.1;
+    final public double MIN_HL_Distance = 0.3;
+    final public double MAX_HL_Distance = 1.0;
 
     public double I_Rotation = 0.0;
     public double I_Increment = 0.1;
@@ -43,17 +45,21 @@ public class BTRobotV1 {
 
     public double Poop_Pose = 0.0;
 
-    private LinearOpMode myOpMode;
+    private OpMode myOpMode;
     private ElapsedTime holdTimer = new ElapsedTime();
 
     private boolean showTelemetry = false;
-    public BTRobotV1(LinearOpMode opMode) {
+    public BTRobotV1(OpMode opMode) {
         myOpMode = opMode;
     }
     //NOTE: when not talking about a lift L indicates Left and R indicates Right
     public DcMotor VLL, VLR, I, HL;
     public Servo HLL, HLR, IL, IR, DW, DC, IP, ADAL, ADAR;
     public RevColorSensorV3 colorSensor;
+
+    public TouchSensor touchSensor;
+    public boolean touchSensorIsPressed = false;
+    public double touchSensorValue;
     private double redValue;
     private double blueValue;
     private double greenValue;
@@ -66,11 +72,11 @@ public class BTRobotV1 {
         VLR = setupMotor("VLR", DcMotor.Direction.REVERSE);
 
         //Horizontal lift Servo
-        //HLL = setupServo("HLL", Servo.Direction.REVERSE);
-        //HLR = setupServo("HLR", Servo.Direction.FORWARD);
+        HLL = setupServo("HLL", Servo.Direction.REVERSE);
+        HLR = setupServo("HLR", Servo.Direction.FORWARD);
 
         //Horizontal life Motors
-        HL = setupMotor("HL", DcMotorSimple.Direction.FORWARD);
+        //HL = setupMotor("HL", DcMotorSimple.Direction.FORWARD);
 
         //Intake
         I = setupDriveMotor("I", DcMotor.Direction.REVERSE);
@@ -87,12 +93,14 @@ public class BTRobotV1 {
         DC = setupServo("DC", Servo.Direction.FORWARD);
 
         //Deposit Arm ADAL = "Axon Deposit Arm Left" ADAR = "Axon Deposit Arm Right"
-        ADAL = setupServo("ADAL", Servo.Direction.FORWARD);
+        ADAL = setupServo("ADAL", Servo.Direction.REVERSE);
         ADAR = setupServo("ADAR", Servo.Direction.FORWARD);
 
         colorSensor = (RevColorSensorV3) myOpMode.hardwareMap.get("colorSensor");
 
         colorSensor.enableLed(true);
+
+        touchSensor = (TouchSensor) myOpMode.hardwareMap.get("touchSensor");
     }
 
     //Setups the Drive Motor As Well As Setting Direction
@@ -126,7 +134,7 @@ public class BTRobotV1 {
     }
     public void TelemetryOutput() {
         myOpMode.telemetry.addData("Vertical_Lift",  VLR.getCurrentPosition());
-        myOpMode.telemetry.addData("Horizontal_Lift",  HL.getCurrentPosition());
+        myOpMode.telemetry.addData("Horizontal_Lift",  HLL.getPosition());
         myOpMode.telemetry.addData("HL", HL_Extension);
         myOpMode.telemetry.addData("Intake_Rotation",  IR.getPosition());
         myOpMode.telemetry.addData("Deposit_Claw",  DC.getPosition());
@@ -138,6 +146,8 @@ public class BTRobotV1 {
         myOpMode.telemetry.addData("Alpha_Value", "%.2f", alphaValue);
         myOpMode.telemetry.addData("Color", intakeColor);
         myOpMode.telemetry.addData("Intake Pow", I.getPower());
+        myOpMode.telemetry.addData("touchSensorIsPressed", touchSensorIsPressed);
+        myOpMode.telemetry.addData("touchSensorValue", "%.2f", touchSensorValue);
     }
 
     public void getColor(){
@@ -155,6 +165,35 @@ public class BTRobotV1 {
         }
     }
 
+    public void getTouchSensor() {
+        touchSensorIsPressed = touchSensor.isPressed();
+        touchSensorValue = touchSensor.getValue();
+    }
+
+    public void resetSlides() {
+        if(!touchSensorIsPressed) {
+            resetVertical_Lift(true);
+        } else{
+            VLL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            VLL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            VLL.setTargetPosition(0);
+            VLL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            VLR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            VLR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            VLR.setTargetPosition(0);
+            VLR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            VL_Extension = 0;
+        }
+    }
+
+    public void resetVertical_Lift(boolean t){
+        if(t){
+            VL_Extension -= VL_Increment;
+            Setup_Vertical_Lift(VL_Extension, 1.0);
+        }
+    }
+
     public void Vertical_Lift(boolean t) {
         if(t){
             VL_Extension += VL_Increment;
@@ -169,13 +208,13 @@ public class BTRobotV1 {
 
     public void Horizontal_Lift(boolean t) {
         if(t){
-            HL_Extension += 25;
+            HL_Extension += HL_Increment;
             HL_Extension = Math.max(MIN_HL_Distance, Math.min(MAX_HL_Distance, HL_Extension));
-            Setup_Horizontal_Lift(HL_Extension, 1.0);
+            Setup_Horizontal_Lift(HL_Extension);
         } else {
             HL_Extension -= HL_Increment;
             HL_Extension = Math.max(MIN_HL_Distance, Math.min(MAX_HL_Distance, HL_Extension));
-            Setup_Horizontal_Lift(HL_Extension, 1.0);
+            Setup_Horizontal_Lift(HL_Extension);
         }
     }
 
@@ -235,10 +274,10 @@ public class BTRobotV1 {
         VLR.setPower(pow);
     }
 
-    public void Setup_Horizontal_Lift(int EXT, double pow) {
+    public void Setup_Horizontal_Lift(double EXT) {
         HL_Extension = EXT;
-        HL.setTargetPosition(HL_Extension);
-        HL.setPower(pow);
+        HLL.setPosition(HL_Extension);
+        HLR.setPosition(HL_Extension);
     }
 
     /*public void Setup_Horizontal_Lift(double EXT) {
@@ -303,7 +342,7 @@ public class BTRobotV1 {
 
     public void HighBasketScore(){
         Setup_Deposit_Claw(false);
-        Setup_Horizontal_Lift(80,1.0);
+        Setup_Horizontal_Lift(0.3);
         Setup_Deposit_Arm(0.5);
         Setup_Deposit_Wrist(0.1);
         Setup_Vertical_Lift(760, 1.0);

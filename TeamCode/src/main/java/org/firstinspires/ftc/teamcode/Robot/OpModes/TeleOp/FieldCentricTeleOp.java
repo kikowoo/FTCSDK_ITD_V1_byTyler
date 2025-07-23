@@ -53,6 +53,8 @@ public class FieldCentricTeleOp extends LinearOpMode {
 
             robot.colorSensor.enableLed(true);
             robot.getColor();
+            robot.getTouchSensor();
+            robot.resetSlides();
         }
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -67,6 +69,7 @@ public class FieldCentricTeleOp extends LinearOpMode {
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
             robot.getColor();
+            robot.getTouchSensor();
 
             if(currentGamepad1.x && !previousGamepad1.x){
                 Color_Alliance = "Blue";
@@ -141,7 +144,7 @@ public class FieldCentricTeleOp extends LinearOpMode {
 
             if(gamepad2.left_trigger > 0.0) {
                 robot.Setup_Intake_Pose_RTP(true);
-                robot.Setup_Horizontal_Lift(30,0.8);
+                robot.Setup_Horizontal_Lift(0.0);
             } else if(gamepad2.right_trigger > 0.0) {
                 robot.Setup_Intake_Pose_RTP(false);
             }

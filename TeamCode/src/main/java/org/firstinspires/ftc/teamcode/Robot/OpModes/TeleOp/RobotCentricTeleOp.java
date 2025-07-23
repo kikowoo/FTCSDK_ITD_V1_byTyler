@@ -141,7 +141,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
 
             if(gamepad2.left_trigger > 0.0) {
                 robot.Setup_Intake_Pose_RTP(true);
-                robot.Setup_Horizontal_Lift(30,0.8);
+                robot.Setup_Horizontal_Lift(0.3);
             } else if(gamepad2.right_trigger > 0.0) {
                 robot.Setup_Intake_Pose_RTP(false);
             }

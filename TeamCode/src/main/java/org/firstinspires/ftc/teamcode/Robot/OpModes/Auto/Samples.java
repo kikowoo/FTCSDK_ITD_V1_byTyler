@@ -10,21 +10,24 @@ import com.pedropathing.pathgen.Point;
 import com.pedropathing.util.Constants;
 import com.pedropathing.util.Timer;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import  com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.teamcode.Robot.Structure.Hardware.BTRobotV1;
 import org.firstinspires.ftc.teamcode.Robot.Structure.Library.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
 @Autonomous(name = "Sample_Auto", group = "Examples")
 public class Samples extends OpMode {
-
+    BTRobotV1 robot = new BTRobotV1(this);
     private Follower follower;
     private Timer pathTimer, actionTimer, opmodeTimer;
 
     /** This is the variable where we store the state of our auto.
      * It is used by the pathUpdate method. */
-    private int pathState;
+    private int pathState, commandState;
 
     /* Create and Define Poses + Paths
      * Poses are built with three constructors: x, y, and heading (in Radians).
@@ -162,7 +165,13 @@ public class Samples extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
+                robot.TransferSample();
                 follower.followPath(scorePreload);
+                robot.HighBasketScore();
+                if(robot.VLR.getCurrentPosition() >= 730) {
+                    robot.Setup_Deposit_Claw(true);
+                }
+                if(pathTimer.getElapsedTime() >= 250){}
                 setPathState(1);
                 break;
             case 1:
@@ -314,6 +323,7 @@ public class Samples extends OpMode {
     @Override
     public void start() {
         opmodeTimer.resetTimer();
+        pathTimer.resetTimer();
         setPathState(0);
     }
 
