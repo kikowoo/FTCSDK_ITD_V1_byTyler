@@ -93,7 +93,7 @@ public class BTRobotV1 {
         DC = setupServo("DC", Servo.Direction.FORWARD);
 
         //Deposit Arm ADAL = "Axon Deposit Arm Left" ADAR = "Axon Deposit Arm Right"
-        ADAL = setupServo("ADAL", Servo.Direction.REVERSE);
+        ADAL = setupServo("ADAL", Servo.Direction.FORWARD);
         ADAR = setupServo("ADAR", Servo.Direction.FORWARD);
 
         colorSensor = (RevColorSensorV3) myOpMode.hardwareMap.get("colorSensor");
@@ -344,6 +344,8 @@ public class BTRobotV1 {
         Setup_Deposit_Claw(false);
         Setup_Horizontal_Lift(0.3);
         Setup_Deposit_Arm(0.5);
+
+
         Setup_Deposit_Wrist(0.1);
         Setup_Vertical_Lift(760, 1.0);
     }
