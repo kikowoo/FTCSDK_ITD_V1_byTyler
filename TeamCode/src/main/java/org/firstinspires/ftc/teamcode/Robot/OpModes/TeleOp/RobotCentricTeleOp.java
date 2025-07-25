@@ -125,12 +125,6 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 robot.Setup_Deposit_Claw(true);
             }
 
-            if(gamepad2.left_stick_x > 0.0){
-                robot.Deposit_Wrist(false);
-            } else if (gamepad2.left_stick_x < 0.0) {
-                robot.Deposit_Wrist(true);
-            }
-
             robot.Intake(-gamepad2.left_stick_y);
 
             if(gamepad2.left_bumper){
@@ -159,7 +153,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
             if(!isAutoDriving) {
                 follower.setTeleOpMovementVectors(
                         gamepad1.left_stick_y * LSY,
-                        gamepad1.left_stick_x * LSX,
+                        -gamepad1.left_stick_x * LSX,
                         gamepad1.right_stick_x * RSX,
                         true);
                 follower.update();

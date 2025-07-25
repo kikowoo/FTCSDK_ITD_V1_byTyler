@@ -37,7 +37,7 @@ public class BTRobotV1 {
     final public double DW_MAX_Rotation = 0.31;
 
     public double DA_Rotation = 0;
-    public double DA_Increment = 0.01;
+    public double DA_Increment = 0.1;
     final public double DA_MIN_Rotation = 0.0;
     final public double DA_MAX_Rotation = 0.95;
 
@@ -294,8 +294,8 @@ public class BTRobotV1 {
 
     public void Setup_Intake_Pose_RTP(boolean t) {
         if(t) {
-            IL.setPosition(1.0);
-            IR.setPosition(1.0);
+            IL.setPosition(0.4);
+            IR.setPosition(0.4);
         } else{
             IL.setPosition(0.0);
             IR.setPosition(0.0);
@@ -304,7 +304,7 @@ public class BTRobotV1 {
 
     public void Setup_Deposit_Claw(boolean t) {
         if(t){
-            DC.setPosition(0.25);
+            DC.setPosition(0.3);
         } else {
             DC.setPosition(0.0);
         }
@@ -358,7 +358,7 @@ public class BTRobotV1 {
     public void TransferSample(){
         Setup_Deposit_Claw(true);
         Setup_Deposit_Arm(0.05);
-        Setup_Deposit_Wrist(0.16);
+        Setup_Deposit_Wrist(0.17);
         Setup_Vertical_Lift(0, 1.0);
     }
 }
