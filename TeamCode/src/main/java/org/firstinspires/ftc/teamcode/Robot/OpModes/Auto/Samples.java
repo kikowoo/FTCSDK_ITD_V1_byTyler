@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Robot.Structure.Library.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-@Autonomous(name = "Sample_Auto", group = "Examples")
+@Autonomous(name = "Sample_Auto", group = "Linear OpMode")
 public class Samples extends OpMode {
     BTRobotV1 robot = new BTRobotV1(this);
     private Follower follower;
@@ -42,16 +42,16 @@ public class Samples extends OpMode {
     private final Pose startPose = new Pose(9, 111, Math.toRadians(270));
 
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
-    private final Pose scorePose = new Pose(18, 130, Math.toRadians(315));
+    private final Pose scorePose = new Pose(20, 125, Math.toRadians(315));
 
     /** Lowest (First) Sample from the Spike Mark */
     private final Pose pickup1Pose = new Pose(18, 125, Math.toRadians(0));
 
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(43, 130, Math.toRadians(0));
+    private final Pose pickup2Pose = new Pose(18, 130, Math.toRadians(0));
 
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(49, 135, Math.toRadians(0));
+    private final Pose pickup3Pose = new Pose(20, 130, Math.toRadians(35));
 
     /** Park Pose for our robot, after we do all of the scoring. */
     private final Pose parkPose = new Pose(60, 98, Math.toRadians(90));
@@ -59,7 +59,7 @@ public class Samples extends OpMode {
     private final Pose pickupSubPose = new Pose(65, 95, Math.toRadians(270));
 
     /** Used as the control point for the BeizerCurve for SubPose*/
-    private final Pose pickupSubControlPose = new Pose(50, 120, Math.toRadians(270));
+    private final Pose pickupSubControlPose = new Pose(55, 130, Math.toRadians(270));
 
     /** Park Pose for our robot, after we do all of the scoring. */
 
@@ -165,14 +165,12 @@ public class Samples extends OpMode {
     public void autonomousPathUpdate() {
         switch (pathState) {
             case 0:
-                robot.TransferSample();
+                robot.Setup_Intake_Pose_RTP(true);
                 follower.followPath(scorePreload);
                 robot.HighBasketScore();
-                if(robot.VLR.getCurrentPosition() >= 730) {
-                    robot.Setup_Deposit_Claw(true);
+                if(robot.DC.getPosition() >= 0.3) {
+                    setPathState(1);
                 }
-                if(pathTimer.getElapsedTime() >= 250){}
-                setPathState(1);
                 break;
             case 1:
 
@@ -289,7 +287,7 @@ public class Samples extends OpMode {
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     @Override
     public void loop() {
-
+        robot.initialize(true);
         // These loop the movements of the robot
         follower.update();
         autonomousPathUpdate();
@@ -312,6 +310,7 @@ public class Samples extends OpMode {
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(startPose);
         buildPaths();
+        robot.initialize(true);
     }
 
     /** This method is called continuously after Init while waiting for "play". **/
@@ -324,6 +323,7 @@ public class Samples extends OpMode {
     public void start() {
         opmodeTimer.resetTimer();
         pathTimer.resetTimer();
+        robot.initialize(true);
         setPathState(0);
     }
 
