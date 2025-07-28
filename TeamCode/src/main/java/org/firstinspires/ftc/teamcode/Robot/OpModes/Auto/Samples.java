@@ -170,13 +170,13 @@ public class Samples extends OpMode {
                 robot.Setup_Intake_Pose_RTP(true);
                 follower.followPath(scorePreload);
                 pathTimer.resetTimer();
-                if(pathTimer.getElapsedTime() >= 250) {
+                if(pathTimer.getElapsedTime() >= 500) {
                     robot.HighBasketScore();
+                    if (robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745) {
+                        robot.Setup_Deposit_Claw(true);
+                    }
                 }
-                if(robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745){
-                    robot.Setup_Deposit_Claw(true);
-                }
-                if(robot.DC.getPosition() >= 0.3) {
+                if (robot.DC.getPosition() >= 0.3) {
                     setPathState(1);
                 }
                 break;
@@ -185,9 +185,12 @@ public class Samples extends OpMode {
                     robot.TransferSample();
                     robot.Intake(-1.0);
                     follower.followPath(grabPickup1,true);
-                    robot.Setup_Horizontal_Lift(1.0);
-                    if(robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9){
-                        setPathState(2);
+                    pathTimer.resetTimer();
+                    if(pathTimer.getElapsedTime() >= 500) {
+                        robot.Setup_Horizontal_Lift(1.0);
+                        if (robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9) {
+                            setPathState(2);
+                        }
                     }
                 }
                 break;
@@ -196,12 +199,15 @@ public class Samples extends OpMode {
                 if(!follower.isBusy()) {
                     robot.Setup_Intake_Pose_RTP(true);
                     follower.followPath(scorePickup1,true);
-                    robot.HighBasketScore();
-                    if(robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745){
-                        robot.Setup_Deposit_Claw(true);
-                    }
-                    if(robot.DC.getPosition() >= 0.3) {
-                        setPathState(3);
+                    pathTimer.resetTimer();
+                    if(pathTimer.getElapsedTime() >= 500) {
+                        robot.HighBasketScore();
+                        if (robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745) {
+                            robot.Setup_Deposit_Claw(true);
+                        }
+                        if (robot.DC.getPosition() >= 0.3) {
+                            setPathState(3);
+                        }
                     }
                 }
                 break;
@@ -211,9 +217,12 @@ public class Samples extends OpMode {
                     robot.TransferSample();
                     robot.Intake(-1.0);
                     follower.followPath(grabPickup1,true);
-                    robot.Setup_Horizontal_Lift(1.0);
-                    if(robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9){
-                        setPathState(4);
+                    pathTimer.resetTimer();
+                    if(pathTimer.getElapsedTime() >= 500) {
+                        robot.Setup_Horizontal_Lift(1.0);
+                        if (robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9) {
+                            setPathState(4);
+                        }
                     }
                 }
                 break;
@@ -222,12 +231,15 @@ public class Samples extends OpMode {
                 if(!follower.isBusy()) {
                     robot.Setup_Intake_Pose_RTP(true);
                     follower.followPath(scorePickup1,true);
-                    robot.HighBasketScore();
-                    if(robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745){
-                        robot.Setup_Deposit_Claw(true);
-                    }
-                    if(robot.DC.getPosition() >= 0.3) {
-                        setPathState(5);
+                    pathTimer.resetTimer();
+                    if(pathTimer.getElapsedTime() >= 500) {
+                        robot.HighBasketScore();
+                        if (robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745) {
+                            robot.Setup_Deposit_Claw(true);
+                        }
+                        if (robot.DC.getPosition() >= 0.3) {
+                            setPathState(5);
+                        }
                     }
                 }
                 break;
@@ -237,9 +249,12 @@ public class Samples extends OpMode {
                     robot.TransferSample();
                     robot.Intake(-1.0);
                     follower.followPath(grabPickup1,true);
-                    robot.Setup_Horizontal_Lift(1.0);
-                    if(robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9){
-                        setPathState(6);
+                    pathTimer.resetTimer();
+                    if(pathTimer.getElapsedTime() >= 500) {
+                        robot.Setup_Horizontal_Lift(1.0);
+                        if (robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9) {
+                            setPathState(6);
+                        }
                     }
                 }
                 break;
@@ -248,12 +263,15 @@ public class Samples extends OpMode {
                 if(!follower.isBusy()) {
                     robot.Setup_Intake_Pose_RTP(true);
                     follower.followPath(scorePickup1,true);
-                    robot.HighBasketScore();
-                    if(robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745){
-                        robot.Setup_Deposit_Claw(true);
-                    }
-                    if(robot.DC.getPosition() >= 0.3) {
-                        setPathState(7);
+                    pathTimer.resetTimer();
+                    if(pathTimer.getElapsedTime() >= 500) {
+                        robot.HighBasketScore();
+                        if (robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745) {
+                            robot.Setup_Deposit_Claw(true);
+                        }
+                        if (robot.DC.getPosition() >= 0.3) {
+                            setPathState(7);
+                        }
                     }
                 }
                 break;
