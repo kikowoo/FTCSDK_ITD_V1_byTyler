@@ -169,7 +169,10 @@ public class Samples extends OpMode {
             case 0:
                 robot.Setup_Intake_Pose_RTP(true);
                 follower.followPath(scorePreload);
-                robot.HighBasketScore();
+                pathTimer.resetTimer();
+                if(pathTimer.getElapsedTime() >= 250) {
+                    robot.HighBasketScore();
+                }
                 if(robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745){
                     robot.Setup_Deposit_Claw(true);
                 }
@@ -179,6 +182,7 @@ public class Samples extends OpMode {
                 break;
             case 1:
                 if(!follower.isBusy()) {
+                    robot.TransferSample();
                     robot.Intake(-1.0);
                     follower.followPath(grabPickup1,true);
                     robot.Setup_Horizontal_Lift(1.0);
@@ -204,6 +208,7 @@ public class Samples extends OpMode {
             case 3:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(!follower.isBusy()) {
+                    robot.TransferSample();
                     robot.Intake(-1.0);
                     follower.followPath(grabPickup1,true);
                     robot.Setup_Horizontal_Lift(1.0);
@@ -229,6 +234,7 @@ public class Samples extends OpMode {
             case 5:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(!follower.isBusy()) {
+                    robot.TransferSample();
                     robot.Intake(-1.0);
                     follower.followPath(grabPickup1,true);
                     robot.Setup_Horizontal_Lift(1.0);
