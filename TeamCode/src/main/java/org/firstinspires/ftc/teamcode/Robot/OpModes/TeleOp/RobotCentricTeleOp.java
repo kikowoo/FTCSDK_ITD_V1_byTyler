@@ -65,7 +65,6 @@ public class RobotCentricTeleOp extends LinearOpMode {
         runtime.reset();
 
         while(opModeIsActive()){
-            Telemetry.Item PWR = telemetry.addData("Regular_mode", "LSY = 1.0, LSX = 1.0, RSX = 1.0");
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
             robot.getColor();

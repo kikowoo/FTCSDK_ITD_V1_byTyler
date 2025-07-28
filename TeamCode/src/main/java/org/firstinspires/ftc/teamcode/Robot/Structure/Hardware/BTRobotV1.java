@@ -341,8 +341,9 @@ public class BTRobotV1 {
     }
 
     public void HighBasketScore(){
+        Setup_Intake_Pose_RTP(true);
+        Setup_Horizontal_Lift(0.0);
         Setup_Deposit_Claw(false);
-        Setup_Horizontal_Lift(0.3);
         Setup_Deposit_Arm(0.5);
         Setup_Deposit_Wrist(0.1);
         Setup_Vertical_Lift(760, 1.0);
