@@ -36,8 +36,6 @@ public class RobotCentricTeleOp extends LinearOpMode {
 
     private Gamepad currentGamepad1 = new Gamepad();
     private Gamepad previousGamepad1 = new Gamepad();
-
-    private String Mode = "Regular_Mode";
     @Override
     public void runOpMode() {
         robot.initialize(true);
@@ -65,6 +63,7 @@ public class RobotCentricTeleOp extends LinearOpMode {
         runtime.reset();
 
         while(opModeIsActive()){
+            Telemetry.Item PWR = telemetry.addData("Regular_mode", "LSY = 1.0, LSX = 1.0, RSX = 1.0");
             previousGamepad1.copy(currentGamepad1);
             currentGamepad1.copy(gamepad1);
             robot.getColor();
@@ -98,12 +97,14 @@ public class RobotCentricTeleOp extends LinearOpMode {
                 LSY = 0.5;
                 LSX = 0.5;
                 RSX = 0.3;
-                Mode = "Baby_Mode";
+                PWR.setValue("Baby_mode", "LSY = 0.5, LSX = 0.5, RSX = 0.3");
+                telemetry.update();
             } else if (currentGamepad1.y && !previousGamepad1.y) {
                 LSY = 1.0;
                 LSX = 1.0;
                 RSX = 1.0;
-                Mode = "Regular_Mode";
+                PWR.setValue("Regular_mode", "LSY = 1.0, LSX = 1.0, RSX = 1.0");
+                telemetry.update();
             }
 
             if(gamepad2.right_stick_y > 0.0){
@@ -151,24 +152,20 @@ public class RobotCentricTeleOp extends LinearOpMode {
 
             if(!isAutoDriving) {
                 follower.setTeleOpMovementVectors(
-                        -gamepad1.left_stick_y * LSY,
+                        gamepad1.left_stick_y * LSY,
                         -gamepad1.left_stick_x * LSX,
-                        -gamepad1.right_stick_x * RSX,
+                        gamepad1.right_stick_x * RSX,
                         true);
                 follower.update();
             }
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("Mode", Mode);
-            telemetry.addData("Forward", LSY);
-            telemetry.addData("Strafe", LSX);
-            telemetry.addData("Turn", RSX);
-            telemetry.addData("Color_Alliance", Color_Alliance);
             /* Telemetry Outputs of our Follower */
             telemetry.addData("X", follower.getPose().getX());
             telemetry.addData("Y", follower.getPose().getY());
             telemetry.addData("Heading in Degrees", Math.toDegrees(follower.getPose().getHeading()));
             telemetry.addData("follower", follower.isBusy());
+            telemetry.addData("Color_Allience", Color_Alliance);
             //telemetry.addData("Intake sampleColor", Intake.sampleColor);
             robot.TelemetryOutput();
             /* Update Telemetry to the Driver Hub */

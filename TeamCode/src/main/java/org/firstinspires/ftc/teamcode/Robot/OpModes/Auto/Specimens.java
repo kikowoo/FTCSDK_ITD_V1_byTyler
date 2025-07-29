@@ -16,7 +16,7 @@ import org.firstinspires.ftc.teamcode.Robot.Structure.Library.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-@Autonomous(name = "Specimen_Auto", group = "Linear OpMode")
+@Autonomous(name = "Specimen_Auto", group = "Examples")
 public class Specimens extends OpMode {
 
     private Follower follower;

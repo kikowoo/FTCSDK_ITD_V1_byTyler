@@ -19,7 +19,7 @@ import org.firstinspires.ftc.teamcode.Robot.Structure.Library.PoseStorage;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.FConstants;
 import org.firstinspires.ftc.teamcode.pedroPathing.constants.LConstants;
 
-@Autonomous(name = "Sample_Auto", group = "OpMode")
+@Autonomous(name = "Sample_Auto", group = "Examples")
 public class Samples extends OpMode {
     BTRobotV1 robot = new BTRobotV1(this);
     private Follower follower;
@@ -28,8 +28,6 @@ public class Samples extends OpMode {
     /** This is the variable where we store the state of our auto.
      * It is used by the pathUpdate method. */
     private int pathState, commandState;
-
-    public String Color_Alliance = null;
 
     /* Create and Define Poses + Paths
      * Poses are built with three constructors: x, y, and heading (in Radians).
@@ -44,16 +42,16 @@ public class Samples extends OpMode {
     private final Pose startPose = new Pose(9, 111, Math.toRadians(270));
 
     /** Scoring Pose of our robot. It is facing the submersible at a -45 degree (315 degree) angle. */
-    private final Pose scorePose = new Pose(15, 125, Math.toRadians(315));
+    private final Pose scorePose = new Pose(18, 130, Math.toRadians(315));
 
     /** Lowest (First) Sample from the Spike Mark */
     private final Pose pickup1Pose = new Pose(18, 125, Math.toRadians(0));
 
     /** Middle (Second) Sample from the Spike Mark */
-    private final Pose pickup2Pose = new Pose(18, 130, Math.toRadians(0));
+    private final Pose pickup2Pose = new Pose(43, 130, Math.toRadians(0));
 
     /** Highest (Third) Sample from the Spike Mark */
-    private final Pose pickup3Pose = new Pose(20, 130, Math.toRadians(35));
+    private final Pose pickup3Pose = new Pose(49, 135, Math.toRadians(0));
 
     /** Park Pose for our robot, after we do all of the scoring. */
     private final Pose parkPose = new Pose(60, 98, Math.toRadians(90));
@@ -61,7 +59,7 @@ public class Samples extends OpMode {
     private final Pose pickupSubPose = new Pose(65, 95, Math.toRadians(270));
 
     /** Used as the control point for the BeizerCurve for SubPose*/
-    private final Pose pickupSubControlPose = new Pose(55, 130, Math.toRadians(270));
+    private final Pose pickupSubControlPose = new Pose(50, 120, Math.toRadians(270));
 
     /** Park Pose for our robot, after we do all of the scoring. */
 
@@ -71,8 +69,8 @@ public class Samples extends OpMode {
      * The Robot will not go to this pose, it is used a control point for our bezier curve. */
 
     /* These are our Paths and PathChains that we will define in buildPaths() */
-    private Path park;
-    private PathChain scorePreload, grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3, grabSubPose1, scoreSubPose1, grabSubPose2, scoreSubPose2;
+    private Path scorePreload, park;
+    private PathChain grabPickup1, grabPickup2, grabPickup3, scorePickup1, scorePickup2, scorePickup3, grabSubPose1, scoreSubPose1, grabSubPose2, scoreSubPose2;
 
     /** Build the paths for the auto (adds, for example, constant/linear headings while doing paths)
      * It is necessary to do this so that all the paths are built before the auto starts. **/
@@ -94,10 +92,8 @@ public class Samples extends OpMode {
          * Here is a explanation of the difference between Paths and PathChains <https://pedropathing.com/commonissues/pathtopathchain.html> */
 
         /* This is our scorePreload path. We are using a BezierLine, which is a straight line. */
-        scorePreload = follower.pathBuilder()
-                .addPath(new BezierLine(new Point(startPose), new Point(scorePose)))
-                .setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading())
-                .build();
+        scorePreload = new Path(new BezierLine(new Point(startPose), new Point(scorePose)));
+        scorePreload.setLinearHeadingInterpolation(startPose.getHeading(), scorePose.getHeading());
 
         /* Here is an example for Constant Interpolation
         scorePreload.setConstantInterpolation(startPose.getHeading()); */
@@ -167,120 +163,82 @@ public class Samples extends OpMode {
      * Everytime the switch changes case, it will reset the timer. (This is because of the setPathState() method)
      * The followPath() function sets the follower to run the specific path, but does NOT wait for it to finish before moving on. */
     public void autonomousPathUpdate() {
-        telemetry.addData("autonomousPathUpdate - path state", pathState);
         switch (pathState) {
             case 0:
-                robot.Setup_Intake_Pose_RTP(true);
-                follower.followPath(scorePreload,true);
-//                robot.HighBasketScore();
+                robot.TransferSample();
+                follower.followPath(scorePreload);
                 robot.HighBasketScore();
-                robot.Setup_Deposit_Claw(false);
-                try {
-//                     Pause the current thread for 1000 milliseconds (1 second)
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    // Handle the InterruptedException, which occurs if another thread interrupts this one
-                    System.err.println("Thread interrupted during sleep: " + e.getMessage());
-                    // Re-interrupt the current thread to indicate that it was interrupted
-                    Thread.currentThread().interrupt();
+                if(robot.VLR.getCurrentPosition() >= 730) {
+                    robot.Setup_Deposit_Claw(true);
                 }
-
+                if(pathTimer.getElapsedTime() >= 250){}
                 setPathState(1);
-                telemetry.addData("autonomousPathUpdate - 1 path state", pathState);
-
                 break;
             case 1:
-                if(!follower.isBusy()) {
-//                   try {
-                    // Pause the current thread for 1000 milliseconds (1 second)
-//                        Thread.sleep(5000);
-//                    } catch (InterruptedException e) {
-//                        // Handle the InterruptedException, which occurs if another thread interrupts this one
-//                        System.err.println("Thread interrupted during sleep: " + e.getMessage());
-//                        // Re-interrupt the current thread to indicate that it was interrupted
-//                        Thread.currentThread().interrupt();
-//                    }
 
-                    robot.Setup_Deposit_Claw(true);
-                    robot.Intake(-1.0);
+                /* You could check for
+                - Follower State: "if(!follower.isBusy() {}"
+                - Time: "if(pathTimer.getElapsedTimeSeconds() > 1) {}"
+                - Robot Position: "if(follower.getPose().getX() > 36) {}"
+                */
+
+                /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
+                if(!follower.isBusy()) {
+                    /* Score Preload */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
                     follower.followPath(grabPickup1,true);
-                    robot.Setup_Horizontal_Lift(1.0);
-                    if(robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9){
-                        setPathState(2);
-                    }
+                    setPathState(2);
                 }
                 break;
             case 2:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup1Pose's position */
                 if(!follower.isBusy()) {
-                    try {
-                        // Pause the current thread for 1000 milliseconds (1 second)
-                        Thread.sleep(5000);
-                    } catch (InterruptedException e) {
-                        // Handle the InterruptedException, which occurs if another thread interrupts this one
-                        System.err.println("Thread interrupted during sleep: " + e.getMessage());
-                        // Re-interrupt the current thread to indicate that it was interrupted
-                        Thread.currentThread().interrupt();
-                    }
-                    robot.Setup_Intake_Pose_RTP(true);
+                    /* Grab Sample */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
                     follower.followPath(scorePickup1,true);
-                    robot.HighBasketScore();
-                    if(robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745){
-                        robot.Setup_Deposit_Claw(true);
-                    }
-                    if(robot.DC.getPosition() >= 0.3) {
-                        setPathState(3);
-                    }
+                    setPathState(3);
                 }
                 break;
             case 3:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(!follower.isBusy()) {
-                    robot.Intake(-1.0);
-                    follower.followPath(grabPickup1,true);
-                    robot.Setup_Horizontal_Lift(1.0);
-                    if(robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9){
-                        setPathState(4);
-                    }
+                    /* Score Sample */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    follower.followPath(grabPickup2,true);
+                    setPathState(4);
                 }
                 break;
             case 4:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup2Pose's position */
                 if(!follower.isBusy()) {
-                    robot.Setup_Intake_Pose_RTP(true);
-                    follower.followPath(scorePickup1,true);
-                    robot.HighBasketScore();
-                    if(robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745){
-                        robot.Setup_Deposit_Claw(true);
-                    }
-                    if(robot.DC.getPosition() >= 0.3) {
-                        setPathState(5);
-                    }
+                    /* Grab Sample */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    follower.followPath(scorePickup2,true);
+                    setPathState(5);
                 }
                 break;
             case 5:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the scorePose's position */
                 if(!follower.isBusy()) {
-                    robot.Intake(-1.0);
-                    follower.followPath(grabPickup1,true);
-                    robot.Setup_Horizontal_Lift(1.0);
-                    if(robot.HLL.getPosition() >= 0.9 || robot.HLR.getPosition() >= 0.9){
-                        setPathState(6);
-                    }
+                    /* Score Sample */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are grabbing the sample */
+                    follower.followPath(grabPickup3,true);
+                    setPathState(6);
                 }
                 break;
             case 6:
                 /* This case checks the robot's position and will wait until the robot position is close (1 inch away) from the pickup3Pose's position */
                 if(!follower.isBusy()) {
-                    robot.Setup_Intake_Pose_RTP(true);
-                    follower.followPath(scorePickup1,true);
-                    robot.HighBasketScore();
-                    if(robot.VLL.getCurrentPosition() >= 745 || robot.VLR.getCurrentPosition() >= 745){
-                        robot.Setup_Deposit_Claw(true);
-                    }
-                    if(robot.DC.getPosition() >= 0.3) {
-                        setPathState(7);
-                    }
+                    /* Grab Sample */
+
+                    /* Since this is a pathChain, we can have Pedro hold the end point while we are scoring the sample */
+                    follower.followPath(scorePickup3, true);
+                    setPathState(7);
                 }
                 break;
             case 7:
@@ -319,7 +277,6 @@ public class Samples extends OpMode {
                 }
                 break;
         }
-
     }
 
     /** These change the states of the paths and actions
@@ -332,7 +289,7 @@ public class Samples extends OpMode {
     /** This is the main loop of the OpMode, it will run repeatedly after clicking "Play". **/
     @Override
     public void loop() {
-        robot.Intake_Poop(robot.intakeColor.equals(Color_Alliance) || robot.intakeColor.equals("Yellow"));
+
         // These loop the movements of the robot
         follower.update();
         autonomousPathUpdate();
@@ -355,10 +312,6 @@ public class Samples extends OpMode {
         follower = new Follower(hardwareMap, FConstants.class, LConstants.class);
         follower.setStartingPose(startPose);
         buildPaths();
-        robot.initialize(true);
-        robot.colorSensor.enableLed(true);
-        robot.getColor();
-        Color_Alliance = "Blue";
     }
 
     /** This method is called continuously after Init while waiting for "play". **/

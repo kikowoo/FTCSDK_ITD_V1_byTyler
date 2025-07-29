@@ -15,18 +15,18 @@ public class FConstants {
         FollowerConstants.rightFrontMotorName = "rightFront";
         FollowerConstants.rightRearMotorName = "rightRear";
 
-        FollowerConstants.leftFrontMotorDirection = DcMotorSimple.Direction.REVERSE;
-        FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.REVERSE;
-        FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
-        FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.FORWARD;
+        FollowerConstants.leftFrontMotorDirection = DcMotorSimple.Direction.FORWARD;
+        FollowerConstants.leftRearMotorDirection = DcMotorSimple.Direction.FORWARD;
+        FollowerConstants.rightFrontMotorDirection = DcMotorSimple.Direction.REVERSE;
+        FollowerConstants.rightRearMotorDirection = DcMotorSimple.Direction.REVERSE;
 
-        FollowerConstants.mass = 13.97064;
+        FollowerConstants.mass = 30.8;
 
-        FollowerConstants.xMovement = 76.6767;
-        FollowerConstants.yMovement = 53.3264;
+        FollowerConstants.xMovement = 77.9855;
+        FollowerConstants.yMovement = 43.0299;
 
-        FollowerConstants.forwardZeroPowerAcceleration = -39.308663216441424;
-        FollowerConstants.lateralZeroPowerAcceleration = -77.5915;
+        FollowerConstants.forwardZeroPowerAcceleration = -40.0662;
+        FollowerConstants.lateralZeroPowerAcceleration = -98.5915;
 
         FollowerConstants.translationalPIDFCoefficients.setCoefficients(0.5,0,0.05,0);
         FollowerConstants.useSecondaryTranslationalPID = true;
@@ -40,7 +40,7 @@ public class FConstants {
         FollowerConstants.useSecondaryDrivePID = false;
         FollowerConstants.secondaryDrivePIDFCoefficients.setCoefficients(0.1,0,0,0.6,0); // Not being used, @see useSecondaryDrivePID
 
-        FollowerConstants.zeroPowerAccelerationMultiplier = 7;
+        FollowerConstants.zeroPowerAccelerationMultiplier = 10;
         FollowerConstants.centripetalScaling = 0.0005;
 
         FollowerConstants.pathEndTimeoutConstraint = 100;
